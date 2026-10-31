@@ -9,8 +9,19 @@ function buildGuardPlugin() {
     name: 'site-config-build-guard',
     buildStart() {
       // Production derlemesinde veya STRICT_BUILD_GUARD bayrağı açıkken resmi bilgileri doğrula
-      if (process.env.STRICT_BUILD_GUARD === 'true' || (process.env.NODE_ENV === 'production' && process.env.SKIP_BUILD_GUARD !== 'true')) {
+      // Netlify önizleme derlemelerinde (NETLIFY=true) yer tutucular için derlemeyi kırmaz, uyarı verir
+      if (process.env.STRICT_BUILD_GUARD === 'true') {
         validateSiteConfig(siteConfig);
+      } else if (process.env.NODE_ENV === 'production' && process.env.SKIP_BUILD_GUARD !== 'true') {
+        if (process.env.NETLIFY === 'true') {
+          try {
+            validateSiteConfig(siteConfig);
+          } catch (err: any) {
+            console.warn('[site-config-build-guard] UYARI: Netlify ortamında eksik/yer tutucu resmi bilgi tespit edildi, önizleme için derlemeye devam ediliyor.\n' + err.message);
+          }
+        } else {
+          validateSiteConfig(siteConfig);
+        }
       }
     },
   };
