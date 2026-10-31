@@ -8,6 +8,7 @@ import { AboutPage } from './pages/AboutPage.js';
 import { ClaimGuidePage } from './pages/ClaimGuidePage.js';
 import { ContactPage } from './pages/ContactPage.js';
 import { LegalPage } from './pages/LegalPage.js';
+import { AdminPage } from './pages/admin/AdminPage.js';
 import { ConsultantWidget } from './components/widget/ConsultantWidget.js';
 import { CookiePreferences } from './components/privacy/CookiePreferences.js';
 
@@ -42,6 +43,8 @@ export const App: React.FC = () => {
             <Route path="/gizlilik" element={<LegalPage />} />
             <Route path="/cerez-politikasi" element={<LegalPage />} />
             <Route path="/kullanim-sartlari" element={<LegalPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/talepler" element={<AdminPage />} />
             <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
