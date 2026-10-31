@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { API_BASE_URL } from '../../config/api.js';
+import { API_BASE_URL, parseJsonResponse } from '../../config/api.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink } from '../../utils/whatsapp.js';
 import {
@@ -146,7 +146,7 @@ export const AdminPage: React.FC = () => {
         body: JSON.stringify({ password }),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Giriş başarısız.');
       }
@@ -185,7 +185,7 @@ export const AdminPage: React.FC = () => {
         throw new Error('Oturum süresi doldu, lütfen tekrar giriş yapınız.');
       }
 
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (data.success) {
         setLeads(data.leads || []);
         setTotal(data.total || 0);
@@ -216,7 +216,7 @@ export const AdminPage: React.FC = () => {
       const res = await fetch(`${API_BASE_URL}/admin/leads/${lead.id}/events`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (data.success) {
         setLeadEvents(data.events || []);
       }
@@ -246,7 +246,7 @@ export const AdminPage: React.FC = () => {
         body: JSON.stringify(updates),
       });
 
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
       if (data.success) {
         setSelectedLead(data.lead);
         setNewNote('');
@@ -255,7 +255,7 @@ export const AdminPage: React.FC = () => {
         const evRes = await fetch(`${API_BASE_URL}/admin/leads/${selectedLead.id}/events`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const evData = await evRes.json();
+        const evData = await parseJsonResponse(evRes);
         if (evData.success) setLeadEvents(evData.events || []);
       }
     } catch (err) {

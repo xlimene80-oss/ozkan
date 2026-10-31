@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Product } from '../../data/products.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink, generateLeadWhatsAppMessage } from '../../utils/whatsapp.js';
-import { API_BASE_URL } from '../../config/api.js';
+import { API_BASE_URL, parseJsonResponse } from '../../config/api.js';
 import { AgencyBadge } from '../layout/AgencyBadge.js';
 import {
   Send,
@@ -101,7 +101,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
 
       clearTimeout(timeoutId);
 
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Talep iletilirken bir hata oluştu.');

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { siteConfig } from '../../config/site.js';
 import { safeGetSession, safeSetSession } from '../../utils/storage.js';
 import { buildWhatsAppLink, generateLeadWhatsAppMessage } from '../../utils/whatsapp.js';
-import { API_BASE_URL } from '../../config/api.js';
+import { API_BASE_URL, parseJsonResponse } from '../../config/api.js';
 import {
   Bot,
   X,
@@ -125,7 +125,7 @@ export const ConsultantWidget: React.FC = () => {
       });
 
       clearTimeout(timeoutId);
-      const data = await res.json();
+      const data = await parseJsonResponse(res);
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Mesaj iletilemedi.');
