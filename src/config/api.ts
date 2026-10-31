@@ -1,30 +1,43 @@
 /**
  * API Temel URL Konfigürasyonu
- * 1. Eğer import.meta.env.VITE_API_URL ortam değişkeni tanımlıysa öncelikli olarak kullanılır.
- * 2. Geliştirme (development) ortamında Vite dev server proxy'si için '/api' kullanılır.
- * 3. Canlı / Production ortamında (Netlify) mutlak bir VITE_API_URL tanımlanmamışsa
- *    isteklerin HTML sayfasına çarpmasını önlemek için asıl canlı backend (Render) URL'ine yönlendirilir.
+ * 1. Tarayıcıda elle girilmiş özel backend adresi (localStorage: 13sigorta_custom_api_url) varsa önceliklidir.
+ * 2. Ortam değişkeni (import.meta.env.VITE_API_URL) tanımlıysa onu kullanır.
+ * 3. Geliştirme (development) ortamında Vite dev server proxy'si için '/api' kullanılır.
+ * 4. Canlı / Production ortamında (Netlify) mutlak bir VITE_API_URL tanımlanmamışsa
+ *    asıl canlı backend (Render) URL'ine yönlendirilir.
  */
 
-// Canlı Render Backend API Adresi (Varsayılan Fallback)
-export const RENDER_BACKEND_URL = 'https://sigorta-api.onrender.com/api';
+export const DEFAULT_RENDER_API_URL = 'https://sigorta-api.onrender.com/api';
 
-const rawApiUrl = import.meta.env.VITE_API_URL;
+export function getApiBaseUrl(): string {
+  // 1. Tarayıcıda kullanıcı tarafından girilmiş özel API adresi
+  if (typeof window !== 'undefined') {
+    try {
+      const custom = localStorage.getItem('13sigorta_custom_api_url');
+      if (custom && custom.trim() !== '') {
+        return custom.trim().replace(/\/+$/, '');
+      }
+    } catch {
+      // LocalStorage erişim engeli varsa yoksay
+    }
+  }
 
-export const API_BASE_URL: string = (() => {
-  // Ortam değişkeni açıkça girilmişse onu kullan
+  // 2. Ortam değişkeni açıkça tanımlanmışsa
+  const rawApiUrl = import.meta.env.VITE_API_URL;
   if (rawApiUrl && rawApiUrl.trim() !== '') {
     return rawApiUrl.trim().replace(/\/+$/, '');
   }
 
-  // Yerel geliştirme ortamında Vite proxy'sini (/api -> http://localhost:5000) kullan
+  // 3. Yerel geliştirme ortamında Vite proxy'sini (/api -> http://localhost:5000) kullan
   if (import.meta.env.DEV) {
     return '/api';
   }
 
-  // Canlı Netlify ortamında mutlak Render URL'ini kullan
-  return RENDER_BACKEND_URL;
-})();
+  // 4. Canlı Netlify ortamında varsayılan Render URL'ini kullan
+  return DEFAULT_RENDER_API_URL;
+}
+
+export const API_BASE_URL: string = getApiBaseUrl();
 
 /**
  * Güvenli JSON Yanıt Ayrıştırıcı:

@@ -1,27 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { API_BASE_URL, parseJsonResponse } from '../../config/api.js';
+import { getApiBaseUrl, parseJsonResponse, DEFAULT_RENDER_API_URL } from '../../config/api.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink } from '../../utils/whatsapp.js';
 import {
   Lock,
   Search,
-  Filter,
   Download,
   LogOut,
   RefreshCw,
   Phone,
   Clock,
-  User,
   MessageSquare,
   History,
-  CheckCircle2,
   AlertCircle,
   X,
   Send,
-  Calendar,
   ChevronLeft,
   ChevronRight,
-  ShieldAlert,
+  Settings,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 
 export type LeadStatus =
@@ -71,6 +69,7 @@ export interface LeadEvent {
 }
 
 const STORAGE_KEY = '13sigorta_admin_token';
+const DEMO_TOKEN = 'demo_preview_token';
 
 const STATUS_COLORS: Record<LeadStatus, { bg: string; text: string; border: string }> = {
   Yeni: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
@@ -82,13 +81,160 @@ const STATUS_COLORS: Record<LeadStatus, { bg: string; text: string; border: stri
   Kaybedildi: { bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-200' },
 };
 
+// Backend henüz deploy edilmediğinde veya uykudayken önizleme amacıyla kullanılan örnek veriler
+const INITIAL_MOCK_LEADS: AdminLead[] = [
+  {
+    id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    created_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+    source_page: '/teklif/kasko',
+    product_slug: 'kasko',
+    name: 'Ahmet Yılmaz',
+    phone: '05321112233',
+    email: 'ahmet.yilmaz@example.com',
+    call_time: 'Sabah (09:00 - 12:00)',
+    note: 'Aracım 2022 model, kasko teklifi rica ediyorum.',
+    product_extra: '2022 Model Sedan',
+    kvkk_accepted: true,
+    marketing_consent: true,
+    consent_version: 'v1.0',
+    consent_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+    utm_source: 'google',
+    utm_medium: 'cpc',
+    utm_campaign: 'kasko_kampanya',
+    referrer: 'https://google.com',
+    status: 'Yeni',
+    assigned_to: null,
+    first_contacted_at: null,
+    repeat_count: 1,
+    last_repeated_at: null,
+    notify_status: 'sent_log',
+    notify_error: null,
+  },
+  {
+    id: 'c9a646d3-9c61-4cd9-bc15-4581f6943a45',
+    created_at: new Date(Date.now() - 1000 * 60 * 85).toISOString(),
+    source_page: '/teklif/tamamlayici-saglik',
+    product_slug: 'tamamlayici-saglik',
+    name: 'Fatma Demir',
+    phone: '05442223344',
+    email: 'fatma.demir@example.com',
+    call_time: 'Öğleden sonra (13:00 - 17:00)',
+    note: 'Ailem için tamamlayıcı sağlık sigortası kapsamı öğrenmek istiyorum.',
+    product_extra: '3 Kişi',
+    kvkk_accepted: true,
+    marketing_consent: false,
+    consent_version: 'v1.0',
+    consent_at: new Date(Date.now() - 1000 * 60 * 85).toISOString(),
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    referrer: null,
+    status: 'Arandı',
+    assigned_to: 'Ahmet Yetkili',
+    first_contacted_at: new Date(Date.now() - 1000 * 60 * 50).toISOString(),
+    repeat_count: 1,
+    last_repeated_at: null,
+    notify_status: 'sent_log',
+    notify_error: null,
+  },
+  {
+    id: 'b1290f04-080e-40d5-9c5e-821bc9cbb6f3',
+    created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    source_page: '/',
+    product_slug: 'danisman',
+    name: 'Mehmet Özkan',
+    phone: '05553334455',
+    email: null,
+    call_time: 'Fark etmez',
+    note: 'İş yeri yangın ve sorumluluk sigortası hakkında bilgi alabilir miyim?',
+    product_extra: null,
+    kvkk_accepted: true,
+    marketing_consent: true,
+    consent_version: 'v1.0',
+    consent_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    referrer: null,
+    status: 'Yeni',
+    assigned_to: null,
+    first_contacted_at: null,
+    repeat_count: 2,
+    last_repeated_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+    notify_status: 'sent_log',
+    notify_error: null,
+  },
+  {
+    id: 'e7dcbca7-b721-4efd-9234-bf643edc32ad',
+    created_at: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
+    source_page: '/teklif/zorunlu-trafik',
+    product_slug: 'zorunlu-trafik',
+    name: 'Zeynep Kaya',
+    phone: '05304445566',
+    email: 'zeynep@example.com',
+    call_time: 'Akşam (17:00 - 19:00)',
+    note: 'Trafik sigortası yenileme tarihim yaklaştı.',
+    product_extra: null,
+    kvkk_accepted: true,
+    marketing_consent: false,
+    consent_version: 'v1.0',
+    consent_at: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    referrer: null,
+    status: 'Teklif Verildi',
+    assigned_to: 'Ahmet Yetkili',
+    first_contacted_at: new Date(Date.now() - 1000 * 60 * 300).toISOString(),
+    repeat_count: 1,
+    last_repeated_at: null,
+    notify_status: 'sent_log',
+    notify_error: null,
+  },
+  {
+    id: '8f030a98-67dd-4751-8cf2-72b6f97dcd54',
+    created_at: new Date(Date.now() - 1000 * 60 * 720).toISOString(),
+    source_page: '/teklif/dask',
+    product_slug: 'dask',
+    name: 'Mustafa Çelik',
+    phone: '05425556677',
+    email: 'mustafa@example.com',
+    call_time: 'Fark etmez',
+    note: 'DASK poliçemi yenilemek istiyorum.',
+    product_extra: '120 m2 Daire',
+    kvkk_accepted: true,
+    marketing_consent: true,
+    consent_version: 'v1.0',
+    consent_at: new Date(Date.now() - 1000 * 60 * 720).toISOString(),
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    referrer: null,
+    status: 'Poliçeleşti',
+    assigned_to: 'Ahmet Yetkili',
+    first_contacted_at: new Date(Date.now() - 1000 * 60 * 700).toISOString(),
+    repeat_count: 1,
+    last_repeated_at: null,
+    notify_status: 'sent_log',
+    notify_error: null,
+  },
+];
+
 export const AdminPage: React.FC = () => {
   const [token, setToken] = useState<string | null>(() => sessionStorage.getItem(STORAGE_KEY));
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
+  const [allowDemoFallback, setAllowDemoFallback] = useState(false);
+
+  // API Adresi Ayarı
+  const [showApiSettings, setShowApiSettings] = useState(false);
+  const [customApiUrl, setCustomApiUrl] = useState(() => getApiBaseUrl());
+  const [apiUrlSaved, setApiUrlSaved] = useState(false);
 
   // Veri Durumu
+  const [mockLeads, setMockLeads] = useState<AdminLead[]>(INITIAL_MOCK_LEADS);
   const [leads, setLeads] = useState<AdminLead[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -109,6 +255,8 @@ export const AdminPage: React.FC = () => {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [updating, setUpdating] = useState(false);
+
+  const isDemo = token === DEMO_TOKEN;
 
   // Noindex Meta Başlığı (Arama Motoru Koruması)
   useEffect(() => {
@@ -131,6 +279,27 @@ export const AdminPage: React.FC = () => {
     setToken(null);
     setLeads([]);
     setSelectedLead(null);
+    setAllowDemoFallback(false);
+  };
+
+  // Özel API Adresi Kaydet
+  const handleSaveApiUrl = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      localStorage.setItem('13sigorta_custom_api_url', customApiUrl.trim());
+      setApiUrlSaved(true);
+      setTimeout(() => setApiUrlSaved(false), 2000);
+    } catch {
+      alert('Tarayıcı ayarları kaydedilemedi.');
+    }
+  };
+
+  // Önizleme / Demo Modunda Giriş
+  const handleEnterDemo = () => {
+    sessionStorage.setItem(STORAGE_KEY, DEMO_TOKEN);
+    setToken(DEMO_TOKEN);
+    setPassword('');
+    setLoginError(null);
   };
 
   // Giriş Yap
@@ -138,26 +307,63 @@ export const AdminPage: React.FC = () => {
     e.preventDefault();
     setLoginError(null);
     setLoginLoading(true);
+    setAllowDemoFallback(false);
+    setLoadingStatus('Sunucuya bağlanılıyor...');
+
+    // Render ücretsiz plan soğuk açılışı (cold-start) için 60 saniyelik zaman aşımı
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 60000);
+
+    const coldStartTimer = setTimeout(() => {
+      setLoadingStatus('Render sunucusu uyandırılıyor, lütfen bekleyiniz (ilk açılış ~30 sn sürebilir)...');
+    }, 3500);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/login`, {
+      const targetApi = getApiBaseUrl();
+      const res = await fetch(`${targetApi}/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+      clearTimeout(coldStartTimer);
 
       const data = await parseJsonResponse(res);
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Giriş başarısız.');
+        throw new Error(data.error || `Giriş başarısız oldu (${res.status}).`);
       }
 
       sessionStorage.setItem(STORAGE_KEY, data.token);
       setToken(data.token);
       setPassword('');
     } catch (err: any) {
-      setLoginError(err.message || 'Giriş yapılamadı.');
+      clearTimeout(timeoutId);
+      clearTimeout(coldStartTimer);
+
+      const isNetworkErr =
+        err.name === 'AbortError' ||
+        err.message?.includes('Failed to fetch') ||
+        err.message?.includes('NetworkError') ||
+        err.message?.includes('Backend sunucusuna ulaşılamadı');
+
+      if (isNetworkErr) {
+        setLoginError(
+          'Canlı API sunucusuna ulaşılamadı. Ücretsiz Render sunucusu henüz deploy edilmemiş veya uyku modunda olabilir.'
+        );
+        // Eğer kullanıcı tanımlı şifreyi (13Sigortaozkanliozkan) yazdıysa önizleme seçeneğini aç
+        if (password === '13Sigortaozkanliozkan') {
+          setAllowDemoFallback(true);
+        }
+      } else {
+        setLoginError(err.message || 'Hatalı şifre veya bağlantı sorunu.');
+      }
     } finally {
       setLoginLoading(false);
+      setLoadingStatus('');
     }
   };
 
@@ -166,7 +372,29 @@ export const AdminPage: React.FC = () => {
     if (!token) return;
     setDataLoading(true);
 
+    // 1. Demo / Önizleme Modu
+    if (token === DEMO_TOKEN) {
+      let filtered = [...mockLeads];
+      if (statusFilter !== 'all') filtered = filtered.filter((l) => l.status === statusFilter);
+      if (productFilter !== 'all') filtered = filtered.filter((l) => l.product_slug === productFilter);
+      if (search.trim()) {
+        const q = search.trim().toLowerCase();
+        filtered = filtered.filter(
+          (l) => l.name.toLowerCase().includes(q) || l.phone.includes(q)
+        );
+      }
+
+      setLeads(filtered);
+      setTotal(filtered.length);
+      setTotalPages(1);
+      setNewCount(mockLeads.filter((l) => l.status === 'Yeni').length);
+      setDataLoading(false);
+      return;
+    }
+
+    // 2. Canlı API Modu
     try {
+      const targetApi = getApiBaseUrl();
       const params = new URLSearchParams();
       params.set('page', page.toString());
       params.set('limit', '50');
@@ -176,7 +404,7 @@ export const AdminPage: React.FC = () => {
       if (dateStart) params.set('date_start', dateStart);
       if (dateEnd) params.set('date_end', dateEnd);
 
-      const res = await fetch(`${API_BASE_URL}/admin/leads?${params.toString()}`, {
+      const res = await fetch(`${targetApi}/admin/leads?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -197,7 +425,7 @@ export const AdminPage: React.FC = () => {
     } finally {
       setDataLoading(false);
     }
-  }, [token, page, statusFilter, productFilter, search, dateStart, dateEnd]);
+  }, [token, mockLeads, page, statusFilter, productFilter, search, dateStart, dateEnd]);
 
   useEffect(() => {
     if (token) {
@@ -211,9 +439,36 @@ export const AdminPage: React.FC = () => {
     setNewNote('');
     if (!token) return;
 
+    if (token === DEMO_TOKEN) {
+      setLeadEvents([
+        {
+          id: '1',
+          lead_id: lead.id,
+          created_at: lead.created_at,
+          action: 'created',
+          old_value: null,
+          new_value: 'Talep oluşturuldu',
+        },
+        ...(lead.status !== 'Yeni'
+          ? [
+              {
+                id: '2',
+                lead_id: lead.id,
+                created_at: lead.first_contacted_at || lead.created_at,
+                action: 'status_change',
+                old_value: 'Yeni',
+                new_value: lead.status,
+              },
+            ]
+          : []),
+      ]);
+      return;
+    }
+
     setEventsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/leads/${lead.id}/events`, {
+      const targetApi = getApiBaseUrl();
+      const res = await fetch(`${targetApi}/admin/leads/${lead.id}/events`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await parseJsonResponse(res);
@@ -236,8 +491,38 @@ export const AdminPage: React.FC = () => {
     if (!selectedLead || !token) return;
     setUpdating(true);
 
+    // 1. Demo Modunda Güncelleme
+    if (token === DEMO_TOKEN) {
+      setTimeout(() => {
+        const timestamp = new Date().toLocaleString('tr-TR');
+        const updated = { ...selectedLead };
+
+        if (updates.status) {
+          updated.status = updates.status;
+          if (updates.status === 'Arandı' && !updated.first_contacted_at) {
+            updated.first_contacted_at = new Date().toISOString();
+          }
+        }
+        if (updates.assigned_to !== undefined) {
+          updated.assigned_to = updates.assigned_to;
+        }
+        if (updates.note && updates.note.trim()) {
+          const entry = `[${timestamp} - Yetkili]: ${updates.note.trim()}`;
+          updated.note = updated.note ? `${updated.note}\n${entry}` : entry;
+        }
+
+        setMockLeads((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
+        setSelectedLead(updated);
+        setNewNote('');
+        setUpdating(false);
+      }, 200);
+      return;
+    }
+
+    // 2. Canlı API Modunda Güncelleme
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/leads/${selectedLead.id}`, {
+      const targetApi = getApiBaseUrl();
+      const res = await fetch(`${targetApi}/admin/leads/${selectedLead.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -252,7 +537,7 @@ export const AdminPage: React.FC = () => {
         setNewNote('');
         fetchLeads();
         // Olay geçmişini güncelle
-        const evRes = await fetch(`${API_BASE_URL}/admin/leads/${selectedLead.id}/events`, {
+        const evRes = await fetch(`${targetApi}/admin/leads/${selectedLead.id}/events`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const evData = await parseJsonResponse(evRes);
@@ -268,7 +553,22 @@ export const AdminPage: React.FC = () => {
   // CSV Dışa Aktar
   const handleExportCsv = async () => {
     if (!token) return;
+
+    if (token === DEMO_TOKEN) {
+      const headers = ['ID', 'Tarih', 'Ürün', 'Müşteri', 'Telefon', 'Durum', 'Not'];
+      const rows = mockLeads.map((l) => [l.id, l.created_at, l.product_slug, l.name, l.phone, l.status, l.note || '']);
+      const csv = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `13sigorta-talepler-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      return;
+    }
+
     try {
+      const targetApi = getApiBaseUrl();
       const params = new URLSearchParams();
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (productFilter !== 'all') params.set('product_slug', productFilter);
@@ -276,7 +576,7 @@ export const AdminPage: React.FC = () => {
       if (dateStart) params.set('date_start', dateStart);
       if (dateEnd) params.set('date_end', dateEnd);
 
-      const res = await fetch(`${API_BASE_URL}/admin/leads/export?${params.toString()}`, {
+      const res = await fetch(`${targetApi}/admin/leads/export?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -299,7 +599,7 @@ export const AdminPage: React.FC = () => {
   // 1. Giriş Formu (Oturum Açılmamışsa)
   if (!token) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4 bg-slate-50">
+      <div className="min-h-[85vh] flex items-center justify-center p-4 bg-slate-50">
         <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xl">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-600 mb-4 mx-auto">
             <Lock className="h-6 w-6" />
@@ -312,9 +612,27 @@ export const AdminPage: React.FC = () => {
           </p>
 
           {loginError && (
-            <div className="mb-4 flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>{loginError}</span>
+            <div className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{loginError}</span>
+              </div>
+
+              {allowDemoFallback && (
+                <div className="pt-2 border-t border-rose-200/60">
+                  <button
+                    type="button"
+                    onClick={handleEnterDemo}
+                    className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white py-2 text-xs font-semibold shadow-xs transition-all"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Şifreniz Doğru: Önizleme Modunda Paneli Aç</span>
+                  </button>
+                  <p className="text-[10px] text-slate-500 text-center mt-1">
+                    (Render backend'i henüz açılmadığı için paneli örnek verilerle hemen test edebilirsiniz)
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -337,13 +655,57 @@ export const AdminPage: React.FC = () => {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full rounded-xl bg-sky-600 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 active:scale-[0.99] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+              className="w-full rounded-xl bg-sky-600 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 active:scale-[0.99] disabled:opacity-60 transition-all flex flex-col items-center justify-center gap-1"
             >
-              {loginLoading ? 'Giriş Yapılıyor...' : 'Oturum Aç'}
+              <span>{loginLoading ? 'Giriş Yapılıyor...' : 'Oturum Aç'}</span>
+              {loadingStatus && (
+                <span className="text-[11px] font-normal text-sky-100 animate-pulse">
+                  {loadingStatus}
+                </span>
+              )}
             </button>
           </form>
 
-          <p className="text-[11px] text-center text-slate-400 mt-6">
+          {/* Gelişmiş API Ayarı Aç/Kapa */}
+          <div className="mt-5 border-t border-slate-100 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowApiSettings(!showApiSettings)}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 mx-auto transition-colors"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              <span>{showApiSettings ? 'Sunucu Ayarlarını Gizle' : 'Backend API Sunucu Ayarı'}</span>
+            </button>
+
+            {showApiSettings && (
+              <form onSubmit={handleSaveApiUrl} className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                <label className="block text-[11px] font-semibold text-slate-700">
+                  Canlı API Backend URL
+                </label>
+                <input
+                  type="text"
+                  value={customApiUrl}
+                  onChange={(e) => setCustomApiUrl(e.target.value)}
+                  placeholder={DEFAULT_RENDER_API_URL}
+                  className="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-mono text-slate-900 bg-white"
+                />
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[10px] text-slate-400">
+                    Örn: https://sigorta-api.onrender.com/api
+                  </span>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-1 rounded-md bg-slate-800 text-white px-2.5 py-1 text-[11px] font-medium hover:bg-slate-900"
+                  >
+                    {apiUrlSaved ? <Check className="h-3 w-3 text-emerald-400" /> : null}
+                    <span>{apiUrlSaved ? 'Kaydedildi' : 'Kaydet'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          <p className="text-[11px] text-center text-slate-400 mt-4">
             Bu ekran yetkisiz erişimlere ve arama motorlarına kapalıdır (noindex).
           </p>
         </div>
@@ -355,6 +717,25 @@ export const AdminPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-6 px-3 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
+        {/* Demo / Önizleme Modu Bilgilendirme Bandı */}
+        {isDemo && (
+          <div className="flex items-center justify-between rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4 text-xs text-amber-800">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-amber-600 shrink-0" />
+              <span>
+                <strong>Önizleme / Demo Modu:</strong> Canlı Render API sunucusu henüz aktif olmadığı için panel yerel önizleme verileriyle çalışmaktadır. Tüm filtreleri, not eklemeyi ve CSV indirmeyi test edebilirsiniz.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="ml-3 shrink-0 rounded-lg bg-amber-200/60 px-2.5 py-1 font-semibold text-amber-900 hover:bg-amber-200"
+            >
+              Canlı Girişe Dön
+            </button>
+          </div>
+        )}
+
         {/* Üst Yönetici Başlık Çubuğu */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">
           <div>
@@ -369,7 +750,7 @@ export const AdminPage: React.FC = () => {
               )}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {siteConfig.acenteKisaAd} • {total} toplam başvuru listeleniyor
+              {siteConfig.acenteKisaAd} • {total} başvuru listeleniyor {isDemo ? '(Önizleme Modu)' : `(${getApiBaseUrl()})`}
             </p>
           </div>
 
