@@ -58,7 +58,7 @@ export const Header: React.FC = () => {
             className="flex items-center gap-2.5 focus-visible:outline-brand focus-visible:outline-2 rounded-lg py-1"
             aria-label={`${siteConfig.acenteKisaAd} Ana Sayfa`}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white shadow-sm">
               <Shield className="h-6 w-6 stroke-[2.2]" />
             </div>
             <div className="flex flex-col">
@@ -81,7 +81,7 @@ export const Header: React.FC = () => {
             >
               <button
                 type="button"
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 rounded-md transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-dark rounded-md transition-colors"
                 aria-expanded={productsOpen}
                 aria-haspopup="true"
                 onClick={() => setProductsOpen(!productsOpen)}
@@ -101,7 +101,7 @@ export const Header: React.FC = () => {
                       <Link
                         key={prod.id}
                         to={`/teklif/${prod.slug}`}
-                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-sky-50 hover:text-sky-800 transition-colors"
+                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-brand-soft hover:text-brand-dark transition-colors"
                       >
                         <span className="font-medium">{prod.title}</span>
                         <span className="text-xs text-slate-400">{prod.category}</span>
@@ -115,7 +115,7 @@ export const Header: React.FC = () => {
             {/* 2. Hakkımızda */}
             <Link
               to="/hakkimizda"
-              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-dark rounded-md transition-colors"
             >
               Hakkımızda
             </Link>
@@ -123,7 +123,7 @@ export const Header: React.FC = () => {
             {/* 3. Hasar Bildirimi Bilgi Sayfası */}
             <Link
               to="/hasar-bildirimi"
-              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-dark rounded-md transition-colors"
             >
               Hasar Bildirimi
             </Link>
@@ -131,7 +131,7 @@ export const Header: React.FC = () => {
             {/* 4. İletişim */}
             <Link
               to="/iletisim"
-              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-sky-700 rounded-md transition-colors"
+              className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-dark rounded-md transition-colors"
             >
               İletişim
             </Link>
@@ -152,14 +152,14 @@ export const Header: React.FC = () => {
               href={siteConfig.telefon}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:border-slate-300 transition-colors"
             >
-              <Phone className="h-4 w-4 text-sky-600" />
+              <Phone className="h-4 w-4 text-brand" />
               <span>Hemen Ara</span>
             </a>
 
             <button
               type="button"
               onClick={handleOfferClick}
-              className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark active:scale-[0.98] transition-all"
             >
               <span>Teklif Talep Et</span>
               <ArrowRight className="h-4 w-4" />
@@ -218,7 +218,7 @@ export const Header: React.FC = () => {
                   <Link
                     key={prod.id}
                     to={`/teklif/${prod.slug}`}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-sky-50 hover:text-sky-700"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-brand-soft hover:text-brand-dark"
                   >
                     {prod.title}
                   </Link>
@@ -251,7 +251,7 @@ export const Header: React.FC = () => {
                 href={siteConfig.telefon}
                 className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 py-2.5 text-sm font-semibold text-slate-800"
               >
-                <Phone className="h-4 w-4 text-sky-600" />
+                <Phone className="h-4 w-4 text-brand" />
                 <span>{siteConfig.telefonDisplay}</span>
               </a>
               <button
@@ -260,7 +260,7 @@ export const Header: React.FC = () => {
                   setMobileMenuOpen(false);
                   handleOfferClick(e);
                 }}
-                className="flex items-center justify-center gap-2 rounded-lg bg-sky-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700"
+                className="flex items-center justify-center gap-2 rounded-lg bg-brand py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark"
               >
                 <span>Teklif Talep Et</span>
               </button>
@@ -295,7 +295,7 @@ export const Header: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Örn: Kasko, Sağlık, DASK, Konut..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm text-slate-800 focus:bg-white focus:border-sky-600 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm text-slate-800 focus:bg-white focus:border-brand focus:outline-none"
                 autoFocus
               />
             </div>
@@ -311,13 +311,13 @@ export const Header: React.FC = () => {
                     <Link
                       key={p.id}
                       to={`/teklif/${p.slug}`}
-                      className="flex items-center justify-between rounded-lg p-2.5 hover:bg-sky-50 text-slate-800"
+                      className="flex items-center justify-between rounded-lg p-2.5 hover:bg-brand-soft text-slate-800"
                     >
                       <div>
                         <div className="text-sm font-medium">{p.title}</div>
                         <div className="text-xs text-slate-500">{p.shortDesc}</div>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-sky-600 shrink-0" />
+                      <ArrowRight className="h-4 w-4 text-brand shrink-0" />
                     </Link>
                   ))}
                 </div>

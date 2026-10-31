@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { siteConfig } from '../../config/site.js';
 import { safeGetSession, safeSetSession } from '../../utils/storage.js';
 import { buildWhatsAppLink, generateLeadWhatsAppMessage } from '../../utils/whatsapp.js';
+import { API_BASE_URL } from '../../config/api.js';
 import {
   Bot,
   X,
@@ -106,12 +107,12 @@ export const ConsultantWidget: React.FC = () => {
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
-      const res = await fetch('/api/leads', {
+      const res = await fetch(`${API_BASE_URL}/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           source_page: window.location.pathname,
-          product_slug: 'genel-danismanlik',
+          product_slug: 'danisman',
           name: name.trim(),
           phone: phone.trim(),
           note: message.trim(),

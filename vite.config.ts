@@ -1,32 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { siteConfig } from './src/config/site.js';
+import { validateSiteConfig } from './src/config/siteValidation.js';
 
-// Build Guard Plugin: Production derlemede acenteUnvani veya levhaNo boşsa build HATA verir
+// Build Guard Plugin: Production derlemede eksik veya yer tutucu bilgi varsa build HATA verir
 function buildGuardPlugin() {
   return {
     name: 'site-config-build-guard',
     buildStart() {
-      const isProduction = process.env.NODE_ENV === 'production';
-      if (isProduction || process.env.STRICT_BUILD_GUARD === 'true') {
-        const errors: string[] = [];
-
-        if (!siteConfig.acenteUnvani || siteConfig.acenteUnvani.trim() === '') {
-          errors.push('siteConfig.acenteUnvani boş bırakılamaz.');
-        } else if (
-          !siteConfig.acenteUnvani.includes('Sigorta Aracılık') &&
-          !siteConfig.acenteUnvani.includes('Sigorta Acentelik')
-        ) {
-          errors.push('siteConfig.acenteUnvani yasal olarak "Sigorta Aracılık" veya "Sigorta Acentelik" ifadesini içermelidir.');
-        }
-
-        if (!siteConfig.levhaNo || siteConfig.levhaNo.trim() === '') {
-          errors.push('siteConfig.levhaNo (TOBB Levha No) boş bırakılamaz.');
-        }
-
-        if (errors.length > 0) {
-          throw new Error(`[BUILD GUARD HATASI] Bilgiler eksik olduğu için derleme durduruldu: ${errors.join('; ')}`);
-        }
+      // Production derlemesinde veya STRICT_BUILD_GUARD bayrağı açıkken resmi bilgileri doğrula
+      if (process.env.STRICT_BUILD_GUARD === 'true' || (process.env.NODE_ENV === 'production' && process.env.SKIP_BUILD_GUARD !== 'true')) {
+        validateSiteConfig(siteConfig);
       }
     },
   };

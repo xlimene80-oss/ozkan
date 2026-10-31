@@ -5,10 +5,10 @@
 @layer base {
   :root {
     /* 13 SİGORTA Tasarım Değişkenleri */
-    --brand: #0284c7;        /* Canlı gök mavisi (Allianz kurumsal laciverti/mavisi değildir) */
+    --brand: #0284c7;        /* Canlı gök mavisi */
     --brand-dark: #0369a1;
     --brand-soft: #e0f2fe;
-    --accent: #d97706;       /* Sıcak amber / altın */
+    --accent: #d97706;       /* Sıcak kehribar / altın */
     --accent-soft: #fef3c7;
     --text: #0f172a;         /* Koyu arduvaz */
     --text-muted: #64748b;   /* Nötr gri */
@@ -74,6 +74,17 @@
 
 .animate-widget-three {
   animation: widget-three-pulse 1.3s ease-in-out 3 forwards;
+}
+
+/* Mobil Safe Area Destekleri (iPhone home bar çakışmalarını önler) */
+.safe-bottom-cookie {
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  left: calc(1rem + env(safe-area-inset-left, 0px));
+}
+
+.safe-bottom-widget {
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1rem + env(safe-area-inset-right, 0px));
 }
 
 /* Hareketi Azalt (prefers-reduced-motion) Tercihine Saygı */

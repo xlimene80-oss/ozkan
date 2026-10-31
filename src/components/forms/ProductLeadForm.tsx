@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Product } from '../../data/products.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink, generateLeadWhatsAppMessage } from '../../utils/whatsapp.js';
+import { API_BASE_URL } from '../../config/api.js';
 import { AgencyBadge } from '../layout/AgencyBadge.js';
 import {
   Send,
@@ -89,7 +90,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
         form_start_time: formStartTimeRef.current,
       };
 
-      const res = await fetch('/api/leads', {
+      const res = await fetch(`${API_BASE_URL}/leads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -194,7 +195,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
               setProductExtra('');
               setKvkkAccepted(false);
             }}
-            className="mt-6 text-xs font-semibold text-sky-700 hover:underline"
+            className="mt-6 text-xs font-semibold text-brand-dark hover:underline"
           >
             Yeni bir talep bırak
           </button>
@@ -263,7 +264,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Örn: Ahmet Yılmaz"
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none"
           />
         </div>
 
@@ -279,7 +280,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             value={phone}
             onChange={handlePhoneChange}
             placeholder="05xx xxx xx xx"
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none"
           />
         </div>
 
@@ -294,7 +295,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="ornek@alanadi.com"
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none"
           />
         </div>
 
@@ -309,7 +310,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             value={productExtra}
             onChange={(e) => setProductExtra(e.target.value)}
             placeholder={product.extraFieldPlaceholder}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none"
           />
           {product.extraFieldHelp && (
             <p className="mt-1 text-[11px] text-slate-400">{product.extraFieldHelp}</p>
@@ -325,7 +326,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             id="callTime"
             value={callTime}
             onChange={(e) => setCallTime(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none"
           >
             <option value="Fark etmez">Fark etmez</option>
             <option value="Sabah (09:00 - 12:00)">Sabah (09:00 - 12:00)</option>
@@ -349,7 +350,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Sigorta talebinizle ilgili eklemek istediğiniz detaylar..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none resize-none"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:border-brand focus:outline-none resize-none"
           />
         </div>
 
@@ -363,10 +364,10 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
               required
               checked={kvkkAccepted}
               onChange={(e) => setKvkkAccepted(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand"
             />
             <label htmlFor="kvkk" className="text-xs text-slate-600 leading-normal">
-              <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="font-medium text-sky-700 underline">
+              <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="font-medium text-brand-dark underline">
                 KVKK Aydınlatma Metni
               </a>
               'ni okudum, kişisel verilerimin teklif hazırlanması amacıyla işlenmesini onaylıyorum.{' '}
@@ -381,7 +382,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
               type="checkbox"
               checked={marketingConsent}
               onChange={(e) => setMarketingConsent(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-brand focus:ring-brand"
             />
             <label htmlFor="marketing" className="text-xs text-slate-600 leading-normal">
               Kampanya, bilgilendirme ve ticari elektronik iletiler almayı kabul ediyorum. (İsteğe bağlı)
@@ -394,7 +395,7 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-sky-600 py-3.5 text-sm font-semibold text-white shadow-md hover:bg-sky-700 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand py-3.5 text-sm font-semibold text-white shadow-md hover:bg-brand-dark active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
               <>

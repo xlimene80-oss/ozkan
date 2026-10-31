@@ -23,26 +23,32 @@ export interface SiteConfig {
   surum: string;
 }
 
+/**
+ * 13 SİGORTA - Acente Konfigürasyonu
+ * Kullanıcı tarafından henüz iletilmemiş resmi bilgiler "[BİLGİ GİRİLECEK]" yer tutucusuyla işaretlenmiştir.
+ * Production build guard bu yer tutucuları yakalayarak eksik bilgiyle derleme yapılmasını engeller.
+ */
 export const siteConfig: SiteConfig = {
-  acenteUnvani: '13 Sigorta Aracılık Hizmetleri Ltd. Şti.',
+  // Kullanıcı tarafından verilenler:
   acenteKisaAd: '13 SİGORTA',
-  levhaNo: 'T20241-13130',
-  teknikPersonel: [
-    { ad: 'Ahmet Yılmaz', kayitNo: 'SEGEM-2018-44912' },
-    { ad: 'Elif Demir', kayitNo: 'SEGEM-2021-88123' },
-  ],
-  // YASAL KURAL: Allianz adı yalnızca bu onaylı yetkili acente ifadesinde düz metin olarak geçer.
   yetkiliSirket: 'Allianz Sigorta A.Ş. yetkili acentesidir.',
-  adres: 'Barbaros Mah. Begonya Sok. No: 13/A Ataşehir / İstanbul',
-  telefon: 'tel:+908503081313',
-  telefonDisplay: '0850 308 13 13',
-  eposta: 'bilgi@13sigorta.com',
-  whatsappNumarasi: '905321313013', // 90 ile başlar, + ve boşluk yok
-  calismaSaatleri: 'Hafta İçi: 09:00 - 18:00 | Cumartesi: 09:00 - 13:00',
-  danismanAdi: '13 Sigorta Danışmanı',
   consentVersion: 'v1.0',
-  hasarHatti: '0850 308 13 13',
-  hasarBilgiNotu: 'Hasar anında 7/24 acente destek hattımızdan uzman teknik personelimize ulaşabilirsiniz.',
   siteUrl: 'https://13sigorta.com',
   surum: 'v1.0.0',
+  danismanAdi: '13 Sigorta Danışmanı',
+
+  // Kullanıcı tarafından henüz verilmemiş resmi alanlar (Yer tutucu):
+  acenteUnvani: '[BİLGİ GİRİLECEK]', // Örn: "13 Sigorta Aracılık Hizmetleri Ltd. Şti."
+  levhaNo: '[BİLGİ GİRİLECEK]', // Örn: "T20241-XXXXX"
+  teknikPersonel: [
+    { ad: '[BİLGİ GİRİLECEK]', kayitNo: '[BİLGİ GİRİLECEK]' },
+  ],
+  adres: '[BİLGİ GİRİLECEK]',
+  telefon: 'tel:[BİLGİ GİRİLECEK]',
+  telefonDisplay: '[BİLGİ GİRİLECEK]',
+  eposta: '[BİLGİ GİRİLECEK]',
+  whatsappNumarasi: '[BİLGİ GİRİLECEK]', // 90 ile başlar
+  calismaSaatleri: '[BİLGİ GİRİLECEK]',
+  hasarHatti: '[BİLGİ GİRİLECEK]',
+  hasarBilgiNotu: '[BİLGİ GİRİLECEK]',
 };

@@ -14,13 +14,11 @@ export default {
           DEFAULT: 'var(--accent)',
           soft: 'var(--accent-soft)',
         },
-        textColor: {
-          main: 'var(--text)',
-          muted: 'var(--text-muted)',
-        },
         surface: 'var(--surface)',
         bgMain: 'var(--bg)',
         borderMain: 'var(--border)',
+        textMain: 'var(--text)',
+        textMuted: 'var(--text-muted)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
