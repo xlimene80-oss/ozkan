@@ -61,18 +61,26 @@ export function createApp() {
   app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
   // 4. API Rotaları
-  // Düzeltme 7: /api/admin rotaları için arama motoru indekslemesini engelle
-  app.use('/api/admin', (_req: Request, res: Response, next: NextFunction) => {
-    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    next();
-  });
+  // /api/admin rotaları için arama motoru indekslemesini engelle
+  app.use(
+    ['/api/admin', '/.netlify/functions/api/admin', '/admin'],
+    (_req: Request, res: Response, next: NextFunction) => {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      next();
+    }
+  );
 
-  app.use('/api', healthRouter);
-  app.use('/api', leadsRouter);
-  app.use('/api', adminRouter);
+  const apiRouter = express.Router();
+  apiRouter.use(healthRouter);
+  apiRouter.use(leadsRouter);
+  apiRouter.use(adminRouter);
+
+  // Hem klasik Express /api öneki, hem Netlify Serverless Functions öneki desteklenir
+  app.use('/api', apiRouter);
+  app.use('/.netlify/functions/api', apiRouter);
 
   // 5. 404 Yakalayıcı
-  app.use('/api/*', (_req: Request, res: Response) => {
+  app.use('*', (_req: Request, res: Response) => {
     res.status(404).json({ success: false, error: 'İstenen API uç noktası bulunamadı.' });
   });
 
