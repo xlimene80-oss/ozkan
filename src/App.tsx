@@ -15,17 +15,11 @@ import { CookiePreferences } from './components/privacy/CookiePreferences.js';
 import { API_BASE_URL } from './config/api.js';
 
 export const App: React.FC = () => {
-  // Düzeltme 5: Render ücretsiz plan container uyandırması (Silent Wake-up Ping)
+  // Netlify Serverless API sağlık kontrolü
   useEffect(() => {
-    fetch(`${API_BASE_URL}/health`, { method: 'GET' })
-      .then((res) => {
-        if (res.ok) {
-          console.log('[System] Render API sunucusu aktif ve uyanık.');
-        }
-      })
-      .catch(() => {
-        // Sessiz hata: Kullanıcıya hiçbir uyarı veya hata gösterilmez
-      });
+    fetch(`${API_BASE_URL}/health`, { method: 'GET' }).catch(() => {
+      // Sessiz kontrol
+    });
   }, []);
 
   return (

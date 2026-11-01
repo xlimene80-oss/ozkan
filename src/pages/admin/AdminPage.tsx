@@ -17,9 +17,7 @@ import {
   Send,
   ChevronLeft,
   ChevronRight,
-  Settings,
   Sparkles,
-  Check,
 } from 'lucide-react';
 
 export type LeadStatus =
@@ -225,13 +223,7 @@ export const AdminPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('');
   const [allowDemoFallback, setAllowDemoFallback] = useState(false);
-
-  // API Adresi Ayarı
-  const [showApiSettings, setShowApiSettings] = useState(false);
-  const [customApiUrl, setCustomApiUrl] = useState(() => getApiBaseUrl());
-  const [apiUrlSaved, setApiUrlSaved] = useState(false);
 
   // Veri Durumu
   const [mockLeads, setMockLeads] = useState<AdminLead[]>(INITIAL_MOCK_LEADS);
@@ -299,18 +291,6 @@ export const AdminPage: React.FC = () => {
     setAllowDemoFallback(false);
   };
 
-  // Özel API Adresi Kaydet
-  const handleSaveApiUrl = (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      localStorage.setItem('13sigorta_custom_api_url', customApiUrl.trim());
-      setApiUrlSaved(true);
-      setTimeout(() => setApiUrlSaved(false), 2000);
-    } catch {
-      alert('Tarayıcı ayarları kaydedilemedi.');
-    }
-  };
-
   // Önizleme / Demo Modunda Giriş
   const handleEnterDemo = () => {
     sessionStorage.setItem(STORAGE_KEY, DEMO_TOKEN);
@@ -325,17 +305,11 @@ export const AdminPage: React.FC = () => {
     setLoginError(null);
     setLoginLoading(true);
     setAllowDemoFallback(false);
-    setLoadingStatus('Sunucuya bağlanılıyor...');
 
-    // Serverless soğuk açılışı (cold-start) için 60 saniyelik zaman aşımı
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort();
-    }, 60000);
-
-    const coldStartTimer = setTimeout(() => {
-      setLoadingStatus('Serverless API fonksiyonu başlatılıyor, lütfen bekleyiniz...');
-    }, 3500);
+    }, 15000);
 
     try {
       const targetApi = getApiBaseUrl();
@@ -347,7 +321,6 @@ export const AdminPage: React.FC = () => {
       });
 
       clearTimeout(timeoutId);
-      clearTimeout(coldStartTimer);
 
       const data = await parseJsonResponse(res);
       if (!res.ok || !data.success) {
@@ -359,19 +332,15 @@ export const AdminPage: React.FC = () => {
       setPassword('');
     } catch (err: any) {
       clearTimeout(timeoutId);
-      clearTimeout(coldStartTimer);
 
       const isNetworkErr =
         err.name === 'AbortError' ||
         err.message?.includes('Failed to fetch') ||
         err.message?.includes('NetworkError') ||
-        err.message?.includes('Backend sunucusuna ulaşılamadı');
+        err.message?.includes('Sistem API servisine bağlanılamadı');
 
       if (isNetworkErr) {
-        setLoginError(
-          'Canlı API servisine ulaşılamadı. Netlify Serverless Functions henüz deploy edilmemiş veya yapılandırılmamış olabilir.'
-        );
-        // Eğer kullanıcı tanımlı şifreyi (13Sigortaozkanliozkan) yazdıysa önizleme seçeneğini aç
+        setLoginError('API servisine ulaşılamadı. Lütfen internet bağlantınızı kontrol ediniz.');
         if (password === '13Sigortaozkanliozkan') {
           setAllowDemoFallback(true);
         }
@@ -380,7 +349,6 @@ export const AdminPage: React.FC = () => {
       }
     } finally {
       setLoginLoading(false);
-      setLoadingStatus('');
     }
   };
 
@@ -719,57 +687,13 @@ export const AdminPage: React.FC = () => {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full rounded-xl bg-sky-600 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 active:scale-[0.99] disabled:opacity-60 transition-all flex flex-col items-center justify-center gap-1"
+              className="w-full rounded-xl bg-sky-600 py-3 text-sm font-semibold text-white shadow hover:bg-sky-700 active:scale-[0.99] disabled:opacity-60 transition-all flex items-center justify-center gap-1.5"
             >
               <span>{loginLoading ? 'Giriş Yapılıyor...' : 'Oturum Aç'}</span>
-              {loadingStatus && (
-                <span className="text-[11px] font-normal text-sky-100 animate-pulse">
-                  {loadingStatus}
-                </span>
-              )}
             </button>
           </form>
 
-          {/* Gelişmiş API Ayarı Aç/Kapa */}
-          <div className="mt-5 border-t border-slate-100 pt-4">
-            <button
-              type="button"
-              onClick={() => setShowApiSettings(!showApiSettings)}
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 mx-auto transition-colors"
-            >
-              <Settings className="h-3.5 w-3.5" />
-              <span>{showApiSettings ? 'Sunucu Ayarlarını Gizle' : 'Backend API Sunucu Ayarı'}</span>
-            </button>
-
-            {showApiSettings && (
-              <form onSubmit={handleSaveApiUrl} className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                <label className="block text-[11px] font-semibold text-slate-700">
-                  Canlı API Backend URL
-                </label>
-                <input
-                  type="text"
-                  value={customApiUrl}
-                  onChange={(e) => setCustomApiUrl(e.target.value)}
-                  placeholder={DEFAULT_API_URL}
-                  className="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-mono text-slate-900 bg-white"
-                />
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-slate-400">
-                    Örn: /api veya https://api.13sigorta.com/api
-                  </span>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-1 rounded-md bg-slate-800 text-white px-2.5 py-1 text-[11px] font-medium hover:bg-slate-900"
-                  >
-                    {apiUrlSaved ? <Check className="h-3 w-3 text-emerald-400" /> : null}
-                    <span>{apiUrlSaved ? 'Kaydedildi' : 'Kaydet'}</span>
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-
-          <p className="text-[11px] text-center text-slate-400 mt-4">
+          <p className="text-[11px] text-center text-slate-400 mt-6">
             Bu ekran yetkisiz erişimlere ve arama motorlarına kapalıdır (noindex).
           </p>
         </div>

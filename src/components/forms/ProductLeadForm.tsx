@@ -69,9 +69,9 @@ export const ProductLeadForm: React.FC<ProductLeadFormProps> = ({ product }) => 
 
     setLoading(true);
 
-    // 60 Saniye Zaman Aşımı Denetleyicisi (Render container soğuk açılışı için)
+    // 15 Saniye Zaman Aşımı Denetleyicisi
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
       const payload = {

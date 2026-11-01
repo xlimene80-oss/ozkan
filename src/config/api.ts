@@ -1,41 +1,31 @@
 /**
- * API Temel URL Konfigürasyonu (Netlify Serverless Mimarisi)
- * 1. Tarayıcıda elle girilmiş özel backend adresi (localStorage: 13sigorta_custom_api_url) varsa önceliklidir.
- * 2. Ortam değişkeni (import.meta.env.VITE_API_URL) tanımlıysa onu kullanır.
- * 3. Varsayılan olarak aynı origin'deki '/api' (Netlify Functions) kullanılır.
+ * 13 Sigorta - API Temel URL Konfigürasyonu (Netlify Serverless Mimarisi)
+ * Ön yüz (Frontend) ve Sunucusuz Fonksiyonlar (API Functions) aynı çatı altında,
+ * doğrudan Netlify Serverless Functions (/api/* -> /.netlify/functions/api) üzerinden çalışır.
  */
 
+// Eski tarayıcı önbelleklerinde kalmış özel veya harici URL tanımlarını temizle
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('13sigorta_custom_api_url');
+  } catch {
+    // Erişim kısıtlaması varsa yoksay
+  }
+}
+
+// İstemci doğrudan kendi origin'indeki /api uç noktasına istek atar
 export const DEFAULT_API_URL = '/api';
 
 export function getApiBaseUrl(): string {
-  // 1. Tarayıcıda kullanıcı tarafından girilmiş özel API adresi
-  if (typeof window !== 'undefined') {
-    try {
-      const custom = localStorage.getItem('13sigorta_custom_api_url');
-      if (custom && custom.trim() !== '') {
-        return custom.trim().replace(/\/+$/, '');
-      }
-    } catch {
-      // LocalStorage erişim engeli varsa yoksay
-    }
-  }
-
-  // 2. Ortam değişkeni açıkça tanımlanmışsa (örn: ayrı bir Netlify API sitesi)
-  const rawApiUrl = import.meta.env.VITE_API_URL;
-  if (rawApiUrl && rawApiUrl.trim() !== '') {
-    return rawApiUrl.trim().replace(/\/+$/, '');
-  }
-
-  // 3. Varsayılan Netlify API rotası
   return DEFAULT_API_URL;
 }
 
-export const API_BASE_URL: string = getApiBaseUrl();
+export const API_BASE_URL: string = DEFAULT_API_URL;
 
 /**
  * Güvenli JSON Yanıt Ayrıştırıcı:
  * Eğer sunucu HTML veya 404 dönerse "Unexpected token <" SyntaxError yerine
- * kullanıcı dostu anlaşılır bir hata mesajı üretir.
+ * kullanıcı dostu anlaşılır bir Türkçe hata mesajı üretir.
  */
 export async function parseJsonResponse(res: Response): Promise<any> {
   const contentType = res.headers.get('content-type') || '';
@@ -43,7 +33,7 @@ export async function parseJsonResponse(res: Response): Promise<any> {
     const text = await res.text();
     if (text.includes('<!DOCTYPE') || text.includes('<html')) {
       throw new Error(
-        'Backend API servisine ulaşılamadı. Lütfen Netlify Functions servisinin aktif olduğundan emin olunuz.'
+        'Sistem API servisine bağlanılamadı. Lütfen Netlify Functions servisinin aktif olduğunu doğrulayınız.'
       );
     }
     throw new Error(`Beklenmeyen sunucu yanıtı (${res.status} ${res.statusText})`);
