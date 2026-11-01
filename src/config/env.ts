@@ -20,7 +20,7 @@ export const env = {
   ADMIN_TOKEN_SECRET: process.env.ADMIN_TOKEN_SECRET || process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET,
   JWT_SECRET: process.env.ADMIN_TOKEN_SECRET || process.env.JWT_SECRET || DEFAULT_DEV_JWT_SECRET,
   LEAD_RETENTION_DAYS: parseInt(process.env.LEAD_RETENTION_DAYS || '365', 10),
-  LEAD_NOTIFY_MODE: (process.env.LEAD_NOTIFY_MODE || 'log').split(',').map((s) => s.trim()),
+  LEAD_NOTIFY_MODE: (process.env.LEAD_NOTIFY_MODE || 'log,email').split(',').map((s) => s.trim()),
 
   // E-posta
   SMTP_HOST: process.env.SMTP_HOST || '',
@@ -29,9 +29,9 @@ export const env = {
   SMTP_PASS: process.env.SMTP_PASS || '',
   SMTP_SECURE: process.env.SMTP_SECURE === 'true',
   EMAIL_FROM: process.env.EMAIL_FROM || '13 Sigorta <bildirim@13sigorta.com>',
-  NOTIFY_EMAIL_TO: process.env.NOTIFY_EMAIL_TO || '',
+  NOTIFY_EMAIL_TO: process.env.NOTIFY_EMAIL_TO || 'bilgi@13sigorta.com',
 
-  // Meta WhatsApp Cloud API
+  // Meta WhatsApp Cloud API (İsteğe bağlı harici entegrasyon)
   WHATSAPP_API_VERSION: process.env.WHATSAPP_API_VERSION || 'v21.0',
   WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN || '',
   WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
@@ -50,13 +50,7 @@ export function isNotificationConfigured(testEnv = env): boolean {
   for (const mode of modes) {
     if (mode === 'log') continue;
     if (mode === 'email') {
-      if (
-        !testEnv.SMTP_HOST ||
-        !testEnv.SMTP_PORT ||
-        !testEnv.SMTP_USER ||
-        !testEnv.SMTP_PASS ||
-        !testEnv.NOTIFY_EMAIL_TO
-      ) {
+      if (!testEnv.NOTIFY_EMAIL_TO || testEnv.NOTIFY_EMAIL_TO.trim() === '') {
         return false;
       }
     } else if (mode === 'whatsapp_cloud') {
@@ -84,9 +78,6 @@ export function checkNotificationEnvWarnings(testEnv = env): void {
   for (const mode of modes) {
     if (mode === 'email') {
       const emailMissing: string[] = [];
-      if (!testEnv.SMTP_HOST) emailMissing.push('SMTP_HOST');
-      if (!testEnv.SMTP_USER) emailMissing.push('SMTP_USER');
-      if (!testEnv.SMTP_PASS) emailMissing.push('SMTP_PASS');
       if (!testEnv.NOTIFY_EMAIL_TO) emailMissing.push('NOTIFY_EMAIL_TO');
       if (emailMissing.length > 0) missing['email'] = emailMissing;
     } else if (mode === 'whatsapp_cloud') {

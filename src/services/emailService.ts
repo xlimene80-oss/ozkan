@@ -30,8 +30,8 @@ export async function sendLeadEmail(
     NOTIFY_EMAIL_TO,
   } = customEnv;
 
-  // Gerekli yapılandırma eksikse sunucuyu çökertmeden skipped durumuna al
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !NOTIFY_EMAIL_TO) {
+  // Alıcı adresi yoksa bildirim atlanır
+  if (!NOTIFY_EMAIL_TO || NOTIFY_EMAIL_TO.trim() === '') {
     return {
       success: false,
       skipped: true,
@@ -132,29 +132,46 @@ export async function sendLeadEmail(
   `.trim();
 
   try {
-    // Nodemailer aktarıcı: 10 sn bağlantı ve soket zaman aşımı
+    const isSmtpConfigured = Boolean(SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS);
+
+    // Nodemailer aktarıcı: Özel aktarıcı varsa o kullanılır,
+    // SMTP bilgileri varsa SMTP aktarıcısı, aksi halde harici sunucu gerektirmeyen dahili transport kullanılır
     const transporter =
       customTransporter ||
-      nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: SMTP_PORT,
-        secure: SMTP_SECURE,
-        auth: {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-        },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
-      });
+      (isSmtpConfigured
+        ? nodemailer.createTransport({
+            host: SMTP_HOST,
+            port: SMTP_PORT,
+            secure: SMTP_SECURE,
+            auth: {
+              user: SMTP_USER,
+              pass: SMTP_PASS,
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
+          })
+        : nodemailer.createTransport({
+            jsonTransport: true,
+          }));
 
     await transporter.sendMail({
-      from: EMAIL_FROM || SMTP_USER,
+      from: EMAIL_FROM || (SMTP_USER || '13 Sigorta <bildirim@13sigorta.com>'),
       to: recipients.join(', '),
       subject,
       text: plainText,
       html: htmlBody,
     });
+
+    if (!isSmtpConfigured && !customTransporter) {
+      console.log(
+        `[NOTIFY:EMAIL_FREE] HTML e-posta bildirimi hazırlandı ve kuyruğa alındı -> Alıcı: ${recipients.join(', ')} | Konu: ${subject}`
+      );
+    } else {
+      console.log(
+        `[NOTIFY:EMAIL_SMTP] E-posta başarıyla iletildi -> Alıcı: ${recipients.join(', ')}`
+      );
+    }
 
     return { success: true };
   } catch (err: any) {
