@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getApiBaseUrl, parseJsonResponse, DEFAULT_API_URL } from '../../config/api.js';
 import { siteConfig } from '../../config/site.js';
-import { buildWhatsAppLink } from '../../utils/whatsapp.js';
+import { buildWhatsAppLink, buildAdminWhatsAppLink } from '../../utils/whatsapp.js';
 import {
   Lock,
   Search,
@@ -971,16 +971,29 @@ export const AdminPage: React.FC = () => {
                             {contactTimeStr}
                           </td>
                           <td className="py-3 px-4 whitespace-nowrap text-right">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectLead(lead);
-                              }}
-                              className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors"
-                            >
-                              Detay
-                            </button>
+                            <div className="flex items-center justify-end gap-1.5">
+                              <a
+                                href={buildAdminWhatsAppLink(lead)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                title="Müşteriye WhatsApp Web'den mesaj yaz"
+                                className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 text-xs font-semibold hover:bg-emerald-100 transition-colors"
+                              >
+                                <MessageSquare className="h-3 w-3 text-emerald-600" />
+                                <span>WhatsApp</span>
+                              </a>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectLead(lead);
+                                }}
+                                className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition-colors"
+                              >
+                                Detay
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -1025,6 +1038,20 @@ export const AdminPage: React.FC = () => {
                           {lead.note}
                         </p>
                       )}
+
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                        <a
+                          href={buildAdminWhatsAppLink(lead)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 text-xs font-semibold hover:bg-emerald-100"
+                        >
+                          <MessageSquare className="h-3.5 w-3.5 text-emerald-600" />
+                          <span>WhatsApp'tan Yaz</span>
+                        </a>
+                        <span className="text-xs font-semibold text-sky-700">Detay Gör →</span>
+                      </div>
                     </div>
                   );
                 })}
@@ -1135,6 +1162,22 @@ export const AdminPage: React.FC = () => {
                     <span className="text-slate-800">{selectedLead.product_extra}</span>
                   </div>
                 )}
+
+                {/* Doğrudan WhatsApp Web / Uygulama Yönlendirmesi */}
+                <div className="pt-2 border-t border-slate-200">
+                  <a
+                    href={buildAdminWhatsAppLink(selectedLead)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white py-2.5 px-4 text-xs font-bold shadow-sm transition-all"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span>WhatsApp'tan Yaz (Web / Uygulama)</span>
+                  </a>
+                  <p className="text-[10px] text-slate-400 text-center mt-1">
+                    Meta Cloud API gerekmeden doğrudan WhatsApp Web üzerinden hazır teklif mesajını açar.
+                  </p>
+                </div>
 
                 {/* Bildirim Durumu & Yeniden Bildir (Failed/Partial) */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-t border-slate-200 pt-2.5">

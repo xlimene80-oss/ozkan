@@ -64,6 +64,26 @@ export function buildWhatsAppLink(number?: string, text?: string): WhatsAppLinks
 }
 
 /**
+ * Admin Paneli için Doğrudan Müşteriye WhatsApp Web / Uygulama Yönlendirmesi
+ * Format: "Yeni Teklif Talebi - Ürün: [Ürün Adı], İsim: [Müşteri Adı], Telefon: [Telefon], Saat: [Aranma Saati]"
+ */
+export function buildAdminWhatsAppLink(lead: {
+  product_slug: string;
+  name: string;
+  phone: string;
+  call_time?: string;
+}): string {
+  const cleanPhone = sanitizeWhatsAppNumber(lead.phone);
+  const msg = `Yeni Teklif Talebi - Ürün: ${lead.product_slug}, İsim: ${lead.name}, Telefon: ${lead.phone}, Saat: ${lead.call_time || 'Fark etmez'}`;
+  const encoded = encodeURIComponent(msg);
+  const isMobile = isMobileDevice();
+
+  return isMobile
+    ? `https://wa.me/${cleanPhone}?text=${encoded}`
+    : `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encoded}`;
+}
+
+/**
  * Form verilerinden kişisel bilgilerle hazır WhatsApp mesaj metni üretir.
  * Yalnızca formda girilen bilgiler yer alır. Not en fazla 300 karaktere kısaltılır.
  */
