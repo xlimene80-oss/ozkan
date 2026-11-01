@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getApiBaseUrl, parseJsonResponse, DEFAULT_API_URL } from '../../config/api.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink, buildAdminWhatsAppLink } from '../../utils/whatsapp.js';
+import { PwaInstallButton } from '../../components/pwa/PwaInstallButton.js';
 import {
   Lock,
   Search,
@@ -693,6 +694,8 @@ export const AdminPage: React.FC = () => {
             </button>
           </form>
 
+          <PwaInstallButton variant="admin" className="mt-5" />
+
           <p className="text-[11px] text-center text-slate-400 mt-6">
             Bu ekran yetkisiz erişimlere ve arama motorlarına kapalıdır (noindex).
           </p>
@@ -753,6 +756,8 @@ export const AdminPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <PwaInstallButton variant="header" className="!text-xs !py-2 !px-3" />
+
             <button
               type="button"
               onClick={fetchLeads}

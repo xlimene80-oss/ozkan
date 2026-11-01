@@ -11,6 +11,7 @@ import {
   Shield,
   ArrowRight,
 } from 'lucide-react';
+import { PwaInstallButton } from '../pwa/PwaInstallButton.js';
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -137,8 +138,8 @@ export const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Sağ Alan: Arama, Hemen Ara ve Teklif Butonu */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Sağ Alan: Arama, PWA Yükle, Hemen Ara ve Teklif Butonu */}
+          <div className="hidden sm:flex items-center gap-2.5">
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
@@ -147,6 +148,8 @@ export const Header: React.FC = () => {
             >
               <Search className="h-4 w-4" />
             </button>
+
+            <PwaInstallButton variant="header" />
 
             <a
               href={siteConfig.telefon}
@@ -166,24 +169,26 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobilde Hamburger Butonu */}
-          <div className="flex sm:hidden items-center gap-2">
+          {/* Mobilde Hamburger ve Hızlı PWA Butonu */}
+          <div className="flex sm:hidden items-center gap-1.5">
+            <PwaInstallButton variant="header" className="!px-2.5 !py-1.5 !text-xs !gap-1" />
+
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100"
               aria-label="Ara"
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 focus:outline-brand"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 focus:outline-brand"
               aria-expanded={mobileMenuOpen}
               aria-label="Menüyü aç/kapat"
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -208,6 +213,10 @@ export const Header: React.FC = () => {
                 >
                   <X className="h-5 w-5" />
                 </button>
+              </div>
+
+              <div className="mt-3.5">
+                <PwaInstallButton variant="drawer" />
               </div>
 
               <nav className="mt-4 flex flex-col gap-1">
