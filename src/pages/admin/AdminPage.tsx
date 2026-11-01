@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getApiBaseUrl, parseJsonResponse, DEFAULT_RENDER_API_URL } from '../../config/api.js';
+import { getApiBaseUrl, parseJsonResponse, DEFAULT_API_URL } from '../../config/api.js';
 import { siteConfig } from '../../config/site.js';
 import { buildWhatsAppLink } from '../../utils/whatsapp.js';
 import {
@@ -255,8 +255,25 @@ export const AdminPage: React.FC = () => {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [notifyConfigured, setNotifyConfigured] = useState<boolean | null>(null);
+  const [renotifying, setRenotifying] = useState<boolean>(false);
 
   const isDemo = token === DEMO_TOKEN;
+
+  // Sağlık ve Bildirim Yapılandırma Kontrolü
+  useEffect(() => {
+    if (token && token !== DEMO_TOKEN) {
+      const targetApi = getApiBaseUrl();
+      fetch(`${targetApi}/health`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (typeof data.notify_configured === 'boolean') {
+            setNotifyConfigured(data.notify_configured);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [token]);
 
   // Noindex Meta Başlığı (Arama Motoru Koruması)
   useEffect(() => {
@@ -310,14 +327,14 @@ export const AdminPage: React.FC = () => {
     setAllowDemoFallback(false);
     setLoadingStatus('Sunucuya bağlanılıyor...');
 
-    // Render ücretsiz plan soğuk açılışı (cold-start) için 60 saniyelik zaman aşımı
+    // Serverless soğuk açılışı (cold-start) için 60 saniyelik zaman aşımı
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort();
     }, 60000);
 
     const coldStartTimer = setTimeout(() => {
-      setLoadingStatus('Render sunucusu uyandırılıyor, lütfen bekleyiniz (ilk açılış ~30 sn sürebilir)...');
+      setLoadingStatus('Serverless API fonksiyonu başlatılıyor, lütfen bekleyiniz...');
     }, 3500);
 
     try {
@@ -352,7 +369,7 @@ export const AdminPage: React.FC = () => {
 
       if (isNetworkErr) {
         setLoginError(
-          'Canlı API sunucusuna ulaşılamadı. Ücretsiz Render sunucusu henüz deploy edilmemiş veya uyku modunda olabilir.'
+          'Canlı API servisine ulaşılamadı. Netlify Serverless Functions henüz deploy edilmemiş veya yapılandırılmamış olabilir.'
         );
         // Eğer kullanıcı tanımlı şifreyi (13Sigortaozkanliozkan) yazdıysa önizleme seçeneğini aç
         if (password === '13Sigortaozkanliozkan') {
@@ -550,6 +567,53 @@ export const AdminPage: React.FC = () => {
     }
   };
 
+  // Başarısız / Kısmi Bildirimi Yeniden Tetikle (Renotify)
+  const handleRenotify = async (leadId: string) => {
+    if (!selectedLead || !token) return;
+    setRenotifying(true);
+
+    if (token === DEMO_TOKEN) {
+      setTimeout(() => {
+        const updated = {
+          ...selectedLead,
+          notify_status: 'sent',
+          notify_error: null,
+        };
+        setSelectedLead(updated);
+        setMockLeads((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
+        setRenotifying(false);
+      }, 400);
+      return;
+    }
+
+    try {
+      const targetApi = getApiBaseUrl();
+      const res = await fetch(`${targetApi}/admin/leads/${leadId}/renotify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await parseJsonResponse(res);
+      if (data.success && data.lead) {
+        setSelectedLead(data.lead);
+        fetchLeads();
+        // Olay geçmişini yenile
+        const evRes = await fetch(`${targetApi}/admin/leads/${leadId}/events`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const evData = await parseJsonResponse(evRes);
+        if (evData.success) setLeadEvents(evData.events || []);
+      }
+    } catch (err: any) {
+      console.error('[Admin] Renotify hatası:', err.message);
+    } finally {
+      setRenotifying(false);
+    }
+  };
+
   // CSV Dışa Aktar
   const handleExportCsv = async () => {
     if (!token) return;
@@ -629,7 +693,7 @@ export const AdminPage: React.FC = () => {
                     <span>Şifreniz Doğru: Önizleme Modunda Paneli Aç</span>
                   </button>
                   <p className="text-[10px] text-slate-500 text-center mt-1">
-                    (Render backend'i henüz açılmadığı için paneli örnek verilerle hemen test edebilirsiniz)
+                    (API henüz aktif olmadığı için paneli örnek verilerle hemen test edebilirsiniz)
                   </p>
                 </div>
               )}
@@ -686,12 +750,12 @@ export const AdminPage: React.FC = () => {
                   type="text"
                   value={customApiUrl}
                   onChange={(e) => setCustomApiUrl(e.target.value)}
-                  placeholder={DEFAULT_RENDER_API_URL}
+                  placeholder={DEFAULT_API_URL}
                   className="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-mono text-slate-900 bg-white"
                 />
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-[10px] text-slate-400">
-                    Örn: https://sigorta-api.onrender.com/api
+                    Örn: /api veya https://api.13sigorta.com/api
                   </span>
                   <button
                     type="submit"
@@ -723,7 +787,7 @@ export const AdminPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-amber-600 shrink-0" />
               <span>
-                <strong>Önizleme / Demo Modu:</strong> Canlı Render API sunucusu henüz aktif olmadığı için panel yerel önizleme verileriyle çalışmaktadır. Tüm filtreleri, not eklemeyi ve CSV indirmeyi test edebilirsiniz.
+                <strong>Önizleme / Demo Modu:</strong> Canlı API servisi henüz aktif olmadığı için panel yerel önizleme verileriyle çalışmaktadır. Tüm filtreleri, not eklemeyi ve CSV indirmeyi test edebilirsiniz.
               </span>
             </div>
             <button
@@ -733,6 +797,16 @@ export const AdminPage: React.FC = () => {
             >
               Canlı Girişe Dön
             </button>
+          </div>
+        )}
+
+        {/* Bildirim Yapılandırma Uyarısı */}
+        {notifyConfigured === false && !isDemo && (
+          <div className="flex items-center gap-2.5 rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4 text-xs text-amber-800">
+            <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+            <span>
+              <strong>Bildirim Yapılandırması Eksik:</strong> Dış bildirim kanalları (E-posta veya WhatsApp Cloud API) henüz ortam değişkenlerinde tanımlanmamış. Müşteri talepleri veritabanına eksiksiz kaydedilmektedir, ancak harici bildirim gönderilememektedir.
+            </span>
           </div>
         )}
 
@@ -1137,6 +1211,43 @@ export const AdminPage: React.FC = () => {
                     <span className="text-slate-800">{selectedLead.product_extra}</span>
                   </div>
                 )}
+
+                {/* Bildirim Durumu & Yeniden Bildir (Failed/Partial) */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border-t border-slate-200 pt-2.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-slate-500 font-semibold">Bildirim Durumu:</span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                        selectedLead.notify_status === 'sent'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : selectedLead.notify_status === 'partial'
+                          ? 'bg-amber-100 text-amber-800'
+                          : selectedLead.notify_status === 'failed'
+                          ? 'bg-rose-100 text-rose-800'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      {selectedLead.notify_status || 'pending'}
+                    </span>
+                    {selectedLead.notify_error && (
+                      <span className="text-[10px] text-rose-600 font-mono">
+                        ({selectedLead.notify_error})
+                      </span>
+                    )}
+                  </div>
+
+                  {(selectedLead.notify_status === 'failed' || selectedLead.notify_status === 'partial') && (
+                    <button
+                      type="button"
+                      disabled={renotifying}
+                      onClick={() => handleRenotify(selectedLead.id)}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-slate-900 disabled:opacity-50 transition-all shrink-0"
+                    >
+                      <RefreshCw className={`h-3 w-3 ${renotifying ? 'animate-spin' : ''}`} />
+                      <span>{renotifying ? 'Bildiriliyor...' : 'Yeniden Bildir'}</span>
+                    </button>
+                  )}
+                </div>
 
                 {/* Tek Tıkla WhatsApp İletişim Butonu (Cihaz Tespitiyle) */}
                 {(() => {
