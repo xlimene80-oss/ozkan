@@ -1,0 +1,70 @@
+# ==============================================================================
+# 13 SİGORTA - Render Deployment Blueprint (render.yaml)
+# Managed PostgreSQL + Express API Web Service
+# ==============================================================================
+
+databases:
+  - name: sigorta-db
+    databaseName: sigorta_prod
+    user: sigorta_admin
+    plan: free
+    region: frankfurt
+
+services:
+  # Backend Web Service (Node.js + Express)
+  - type: web
+    name: sigorta-api
+    env: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sigorta-db
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://13sigorta.netlify.app
+      - key: IP_HASH_SALT
+        generateValue: true
+      - key: ADMIN_TOKEN_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: LEAD_NOTIFY_MODE
+        value: log
+      - key: LEAD_RETENTION_DAYS
+        value: 365
+      # Bildirim Değişkenleri (Render Panelinden Girilir)
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: NOTIFY_EMAIL_TO
+        sync: false
+      - key: WHATSAPP_API_VERSION
+        value: v21.0
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_NOTIFY_TO
+        sync: false
+      - key: WHATSAPP_TEMPLATE_NAME
+        value: teklif_talebi_bildirimi
+      - key: WHATSAPP_TEMPLATE_LANG
+        value: tr
