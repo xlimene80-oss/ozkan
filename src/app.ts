@@ -9,7 +9,7 @@ import adminRouter from './routes/admin.js';
 export function createApp() {
   const app = express();
 
-  // Düzeltme B: Render ve ters proxy arkasında gerçek istemci IP'sini okumak için
+  // Netlify ve ters proxy arkasında gerçek istemci IP'sini okumak için
   app.set('trust proxy', 1);
 
   // 1. Güvenlik Başlıkları (Helmet)
@@ -20,7 +20,11 @@ export function createApp() {
     })
   );
 
-  // 2. CORS (Sadece FRONTEND_URL; Netlify deploy-preview adresleri varsayılan olarak engelli)
+  // 2. CORS (Sadece https://13sigorta.netlify.app; Netlify deploy-preview adresleri varsayılan olarak kesinlikle engelli)
+  const canonicalOrigin = 'https://13sigorta.netlify.app';
+  const configuredOrigin = env.FRONTEND_URL ? env.FRONTEND_URL.replace(/\/+$/, '') : null;
+  const allowedOrigins = Array.from(new Set([canonicalOrigin, ...(configuredOrigin ? [configuredOrigin] : [])]));
+
   const devOrigins = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
@@ -35,8 +39,8 @@ export function createApp() {
           return callback(null, true);
         }
 
-        // 1. FRONTEND_URL ile tam eşleşme (örn: https://13sigorta.netlify.app)
-        if (env.FRONTEND_URL && origin === env.FRONTEND_URL) {
+        // 1. Canlı frontend adresi (https://13sigorta.netlify.app veya yapılandırılmış FRONTEND_URL)
+        if (allowedOrigins.includes(origin)) {
           return callback(null, true);
         }
 
