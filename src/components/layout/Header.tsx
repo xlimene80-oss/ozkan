@@ -170,8 +170,8 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Mobilde Hamburger ve Hızlı PWA Butonu */}
-          <div className="flex sm:hidden items-center gap-1.5">
-            <PwaInstallButton variant="header" className="!px-2.5 !py-1.5 !text-xs !gap-1" />
+          <div className="flex sm:hidden items-center gap-2">
+            <PwaInstallButton variant="mobile-nav" />
 
             <button
               type="button"

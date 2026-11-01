@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "13 SİGORTA",
   "short_name": "13 SİGORTA",
   "description": "13 Sigorta Aracılık Hizmetleri - Hızlı ve Güvenilir Sigorta Çözümleri",
@@ -8,6 +9,7 @@
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0284c7",
+  "prefer_related_applications": false,
   "lang": "tr",
   "dir": "ltr",
   "categories": ["finance", "business"],
@@ -16,19 +18,31 @@
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
