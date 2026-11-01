@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Global beforeinstallprompt yakalama (sayfa ilk açıldığı anda kaçırmamak için)
+// Tarayıcının yerel beforeinstallprompt olayını anında yakala
 let globalDeferredPrompt: any = null;
 const promptListeners = new Set<(prompt: any) => void>();
 
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e) => {
+    // Tarayıcının varsayılan bildirimini durdur ve referansı sakla
     e.preventDefault();
     globalDeferredPrompt = e;
     promptListeners.forEach((fn) => fn(e));
@@ -21,14 +22,12 @@ export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(globalDeferredPrompt);
   const [isStandalone, setIsStandalone] = useState<boolean>(false);
   const [isIos, setIsIos] = useState<boolean>(false);
-  const [isAndroid, setIsAndroid] = useState<boolean>(false);
-  const [showIosModal, setShowIosModal] = useState<boolean>(false);
-  const [showGenericModal, setShowGenericModal] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Zaten standalone (PWA olarak açılmış) mı?
+    // 1. Zaten ana ekrandan uygulama olarak mı açılmış?
     const checkStandalone = () => {
       const standalone =
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -39,17 +38,14 @@ export function usePwaInstall() {
 
     checkStandalone();
 
-    // Cihaz tespiti
+    // 2. Apple iOS / iPadOS cihaz tespiti
     const ua = window.navigator.userAgent.toLowerCase();
-    const iosDevice =
+    const isApple =
       /iphone|ipad|ipod/.test(ua) ||
       (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
-    setIsIos(Boolean(iosDevice));
+    setIsIos(Boolean(isApple));
 
-    const androidDevice = /android/.test(ua);
-    setIsAndroid(Boolean(androidDevice));
-
-    // Prompt dinleyici
+    // 3. Prompt olay dinleyicisi
     const onPromptChange = (prompt: any) => {
       setDeferredPrompt(prompt);
     };
@@ -61,19 +57,20 @@ export function usePwaInstall() {
     };
   }, []);
 
+  // Butona tıklandığında çalışan güvenli PWA tetikleyici (Sıfır dosya indirme, %100 yerel)
   const triggerInstall = useCallback(async () => {
-    // 1. Zaten uygulama içindeyse işlem gerekmez
+    // Zaten yüklü ise bir şey yapma
     if (isStandalone) {
       return;
     }
 
-    // 2. iOS Safari ise özel modal aç
+    // iOS cihazlarda Safari yerel rehber popup'ını aç
     if (isIos) {
-      setShowIosModal(true);
+      setShowModal(true);
       return;
     }
 
-    // 3. Android veya Chrome/Edge üzerinde deferredPrompt mevcutsa
+    // Android veya Chromium tarayıcılarda resmi PWA istemcisini aç
     if (deferredPrompt) {
       try {
         await deferredPrompt.prompt();
@@ -83,25 +80,22 @@ export function usePwaInstall() {
           setDeferredPrompt(null);
         }
       } catch (err) {
-        console.error('PWA prompt error:', err);
+        console.warn('[PWA] Prompt tetikleme hatası:', err);
       }
       return;
     }
 
-    // 4. DeferredPrompt henüz hazır değilse veya masaüstü/diğer tarayıcı ise rehber modalı aç
-    setShowGenericModal(true);
+    // Tarayıcı otomatik prompt vermediyse rehber modalını aç
+    setShowModal(true);
   }, [isStandalone, isIos, deferredPrompt]);
 
   return {
-    isInstallable: !isStandalone, // Zaten yüklü değilse her platformda buton aktif ve erişilebilir
+    isInstallable: !isStandalone,
     isStandalone,
     isIos,
-    isAndroid,
     hasNativePrompt: Boolean(deferredPrompt),
-    showIosModal,
-    setShowIosModal,
-    showGenericModal,
-    setShowGenericModal,
+    showModal,
+    setShowModal,
     triggerInstall,
   };
 }
