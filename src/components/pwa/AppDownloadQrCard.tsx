@@ -11,6 +11,7 @@ export const AppDownloadQrCard: React.FC = () => {
   const isTr = language === 'tr';
   const [dismissed, setDismissed] = useState(false);
   const [hasCookieBanner, setHasCookieBanner] = useState(!safeGetLocal(COOKIE_CONSENT_KEY));
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const { triggerInstall, showModal, setShowModal, isIos, isStandalone } = usePwaInstall();
 
   useEffect(() => {
@@ -25,8 +26,22 @@ export const AppDownloadQrCard: React.FC = () => {
     };
   }, []);
 
-  // Zaten PWA modunda çalışıyorsa veya kullanıcı kapattıysa gösterme
-  if (dismissed || isStandalone) return null;
+  useEffect(() => {
+    const handleScroll = () => {
+      // Hero alanını (yaklaşık 420px) geçince görünür yap
+      if (window.scrollY > 420) {
+        setScrolledPastHero(true);
+      } else {
+        setScrolledPastHero(false);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Zaten PWA modunda çalışıyorsa, kullanıcı kapattıysa veya henüz Hero alanındaysa gösterme
+  if (dismissed || isStandalone || !scrolledPastHero) return null;
 
   return (
     <>

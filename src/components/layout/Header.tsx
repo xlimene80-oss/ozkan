@@ -165,61 +165,48 @@ export const Header: React.FC = () => {
             <Logo variant="white" showText={false} imgClassName="h-9 sm:h-10 w-auto" />
           </div>
 
-          {/* 2. DESKTOP HEMEN YANI: WhatsApp & Telefon İkonu + 0543 696 13 13 */}
+          {/* 2. DESKTOP HEMEN YANI: Sadece Şık WhatsApp İkonu + 0543 696 13 13 */}
           <div className="hidden lg:flex items-center gap-1.5 shrink-0">
-            <div className="flex items-center rounded-full bg-white/10 hover:bg-white/15 border border-white/20 p-1 pl-2 pr-3 transition-colors">
-              {/* WhatsApp İkonu */}
-              <a
-                href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm hover:bg-emerald-400 hover:scale-105 transition-all mr-2"
-                title="WhatsApp ile anında yazın"
-                aria-label="WhatsApp Destek Hattı"
-              >
+            <a
+              href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 py-1 pl-1.5 pr-3.5 transition-all group"
+              title="WhatsApp ile hemen iletişime geçin"
+              aria-label="WhatsApp İletişim Hattı"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm group-hover:bg-emerald-400 group-hover:scale-105 transition-all">
                 <MessageCircle className="h-4 w-4 fill-white text-emerald-500" />
-              </a>
-
-              {/* Telefon İkonu ve Arama Linki */}
-              <a
-                href={siteConfig.telefon}
-                className="flex items-center gap-1.5 text-xs lg:text-sm font-bold text-white hover:text-emerald-300 transition-colors tracking-wide"
-                title="Hemen aramak için tıklayın"
-              >
-                <Phone className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
-                <span>{siteConfig.telefonDisplay}</span>
-              </a>
-            </div>
+              </div>
+              <span className="text-xs lg:text-sm font-bold text-white group-hover:text-emerald-300 transition-colors tracking-wide">
+                {siteConfig.telefonDisplay}
+              </span>
+            </a>
           </div>
 
-          {/* MOBİL (TELEFON) SOL & ORTA: Sol Sadece Amblem + 13 Logosu, Orta WhatsApp & Telefon */}
+          {/* MOBİL (TELEFON) SOL & ORTA: Sol Sadece Amblem + 13 Logosu, Orta Sadece WhatsApp */}
           <div className="flex lg:hidden items-center justify-between flex-1 min-w-0 pr-2">
             {/* 1. Sol: Sadece Amblem + 13 Logosu (Beyaz Versiyon, Metinsiz) */}
             <div className="flex items-center shrink-0 pr-1.5">
               <Logo variant="white" showText={false} imgClassName="h-8 w-auto" />
             </div>
 
-            {/* 2. Orta: Yeşil WhatsApp + Telefon ikonu ve 0543 696 13 13 */}
-            <div className="flex items-center rounded-full bg-white/10 border border-white/20 p-0.5 pl-1.5 pr-2.5 shrink-0">
-              <a
-                href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white mr-1.5"
-                title="WhatsApp Danışma"
-                aria-label="WhatsApp Danışma"
-              >
-                <MessageCircle className="h-3 w-3 fill-white text-emerald-500" />
-              </a>
-              <a
-                href={siteConfig.telefon}
-                className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-white hover:text-emerald-300 transition-colors tracking-tight"
-                title="Telefon ile arayın"
-              >
-                <Phone className="h-3 w-3 text-emerald-400" />
-                <span>{siteConfig.telefonDisplay}</span>
-              </a>
-            </div>
+            {/* 2. Orta: Sadece Şık WhatsApp İkonu ve 0543 696 13 13 */}
+            <a
+              href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 py-0.5 pl-1 pr-2.5 shrink-0 hover:bg-white/15 transition-colors"
+              title="WhatsApp Danışma"
+              aria-label="WhatsApp Danışma"
+            >
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs">
+                <MessageCircle className="h-3.5 w-3.5 fill-white text-emerald-500" />
+              </div>
+              <span className="text-[11px] sm:text-xs font-bold text-white tracking-tight">
+                {siteConfig.telefonDisplay}
+              </span>
+            </a>
           </div>
 
           {/* DESKTOP ORTA: İnteraktif Arama Kutusu ("Ne aramıştınız?") */}
@@ -447,19 +434,17 @@ export const Header: React.FC = () => {
               setMobileMenuOpen(true);
               setMobileProductsOpen(true);
             }}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-slate-100 shrink-0 transition-colors text-[#00357B]"
+            className="inline-flex items-center px-3 py-1.5 rounded-full hover:bg-slate-100 shrink-0 transition-colors text-[#00357B]"
           >
             <span>Ürünler</span>
-            <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
           </button>
           <Link
             to="/kampanyalar"
-            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full shrink-0 transition-colors text-[#00357B] ${
+            className={`inline-flex items-center px-3 py-1.5 rounded-full shrink-0 transition-colors text-[#00357B] ${
               location.pathname === '/kampanyalar' ? 'bg-[#eaf1fa]' : 'hover:bg-slate-100'
             }`}
           >
             <span>Kampanyalar</span>
-            <span className="bg-amber-100 text-amber-800 text-[10px] px-1 rounded font-extrabold">Fırsat</span>
           </Link>
           <Link
             to="/anlasmali-kurumlar"
@@ -577,7 +562,7 @@ export const Header: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setProductsMegaOpen(!productsMegaOpen)}
-                className={`inline-flex items-center gap-1 px-3.5 py-2 text-sm font-bold transition-colors rounded-lg ${
+                className={`inline-flex items-center px-3.5 py-2 text-sm font-bold transition-colors rounded-lg ${
                   productsMegaOpen
                     ? 'text-[#00357B] bg-[#eaf1fa]'
                     : 'text-[#00357B] hover:text-[#00224f] hover:bg-[#eaf1fa]'
@@ -585,55 +570,106 @@ export const Header: React.FC = () => {
                 aria-expanded={productsMegaOpen}
               >
                 <span>{t('nav.products')}</span>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${
-                    productsMegaOpen ? 'rotate-180 text-[#00357B]' : 'text-slate-500'
-                  }`}
-                />
               </button>
 
               {/* Mega Dropdown Paneli */}
               {productsMegaOpen && (
-                <div className="absolute left-0 top-full mt-0.5 w-[760px] xl:w-[820px] rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 w-[880px] xl:w-[940px] max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00357B] text-white">
                         <Sparkles className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-wider text-[#00357B]">
-                        {t('menu.allProducts')} (10 Branş)
+                        Sigorta Ürünlerimiz (8 Ana Kategori)
                       </span>
                     </div>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs font-medium text-slate-400">
                       Allianz Sigorta A.Ş. Yetkili Acentesi
                     </span>
                   </div>
 
-                  {/* 10 Ürün Grid Yapısı (2 Sütun x 5 Satır) */}
-                  <div className="grid grid-cols-2 gap-2.5 pt-3">
-                    {PRODUCTS.map((prod) => (
+                  {/* 8 Ürün Grid Yapısı (4 Sütun x 2 Satır) */}
+                  <div className="grid grid-cols-4 gap-3 pt-4">
+                    {[
+                      {
+                        title: 'Bireysel Emeklilik',
+                        desc: 'Geleceğinizi güvenceye alın',
+                        link: '/teklif/bireysel-emeklilik',
+                        icon: <PiggyBank className="h-5 w-5 text-amber-500" />,
+                        badge: 'Devlet Katkılı',
+                      },
+                      {
+                        title: 'Araç Sigortaları',
+                        desc: 'Kasko ve Zorunlu Trafik',
+                        link: '/teklif/kasko',
+                        icon: <Car className="h-5 w-5 text-blue-600" />,
+                      },
+                      {
+                        title: 'Özel Sağlık Sigortaları',
+                        desc: 'Tamamlayıcı ve Özel Sağlık',
+                        link: '/teklif/tamamlayici-saglik',
+                        icon: <HeartPulse className="h-5 w-5 text-rose-500" />,
+                        badge: 'Popüler',
+                      },
+                      {
+                        title: 'Ev ve İşyeri Sigortaları',
+                        desc: 'DASK, Konut ve İşyeri',
+                        link: '/teklif/dask',
+                        icon: <Home className="h-5 w-5 text-emerald-600" />,
+                      },
+                      {
+                        title: 'Bireysel Hayat Sigortaları',
+                        desc: 'Aileniz için finansal kalkan',
+                        link: '/teklif/bireysel-emeklilik',
+                        icon: <ShieldAlert className="h-5 w-5 text-indigo-500" />,
+                      },
+                      {
+                        title: 'Seyahat Sağlık Sigortası',
+                        desc: 'Vize uyumlu yurt dışı & içi',
+                        link: '/teklif/seyahat-saglik',
+                        icon: <Plane className="h-5 w-5 text-sky-500" />,
+                      },
+                      {
+                        title: 'Evcil Hayvan Sigortası',
+                        desc: 'Pati dostlarınıza veteriner güvencesi',
+                        link: '/teklif/evcil-hayvan',
+                        icon: <PawPrint className="h-5 w-5 text-amber-600" />,
+                      },
+                      {
+                        title: 'Diğer Ürünler',
+                        desc: 'Tüm kurumsal & bireysel branşlar',
+                        link: '/#teklif',
+                        icon: <Sparkles className="h-5 w-5 text-[#00357B]" />,
+                      },
+                    ].map((prod, idx) => (
                       <Link
-                        key={prod.id}
-                        to={`/teklif/${prod.slug}`}
-                        onClick={() => setProductsMegaOpen(false)}
-                        className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-[#eaf1fa] transition-all group border border-transparent hover:border-blue-100"
+                        key={idx}
+                        to={prod.link}
+                        onClick={(e) => {
+                          setProductsMegaOpen(false);
+                          if (prod.link.startsWith('/#')) {
+                            handleOfferClick(e);
+                          }
+                        }}
+                        className="flex flex-col items-start p-3 rounded-xl hover:bg-[#eaf1fa] transition-all group border border-transparent hover:border-blue-100 text-left"
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00357B]/10 text-[#00357B] group-hover:bg-[#00357B] group-hover:text-white transition-colors shrink-0 mt-0.5">
-                          {getProductIcon(prod.iconName, 'h-5 w-5')}
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 group-hover:bg-white group-hover:scale-105 transition-all mb-2 shadow-xs border border-slate-100">
+                          {prod.icon}
                         </div>
-                        <div className="min-w-0 flex-1">
+                        <div className="w-full">
                           <div className="flex items-center justify-between gap-1">
-                            <h4 className="text-xs font-bold text-slate-900 group-hover:text-[#00357B] transition-colors truncate">
+                            <h4 className="text-xs font-extrabold text-slate-900 group-hover:text-[#00357B] transition-colors truncate">
                               {prod.title}
                             </h4>
                             {prod.badge && (
-                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.2 shrink-0">
+                              <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1 py-0.2 shrink-0">
                                 {prod.badge}
                               </span>
                             )}
                           </div>
                           <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5 leading-tight">
-                            {prod.shortDesc}
+                            {prod.desc}
                           </p>
                         </div>
                       </Link>
@@ -641,15 +677,16 @@ export const Header: React.FC = () => {
                   </div>
 
                   {/* Alt Mega-Menu Eylem Bandı */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between bg-slate-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between bg-slate-50 -mx-6 -mb-6 p-4 rounded-b-2xl">
                     <div className="flex items-center gap-2 text-xs text-slate-600">
-                      <PhoneCall className="h-4 w-4 text-[#00357B]" />
-                      <span>Sorularınız mı var? Doğrudan uzmanımıza danışın:</span>
                       <a
-                        href={siteConfig.telefon}
-                        className="font-bold text-[#00357B] hover:underline"
+                        href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-bold text-emerald-600 hover:text-emerald-700"
                       >
-                        {siteConfig.telefonDisplay}
+                        <MessageCircle className="h-4 w-4" />
+                        <span>WhatsApp Destek Hattı: {siteConfig.telefonDisplay}</span>
                       </a>
                     </div>
                     <button
@@ -658,9 +695,9 @@ export const Header: React.FC = () => {
                         setProductsMegaOpen(false);
                         handleOfferClick(e);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#00357B] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-[#00224f] transition-all"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#00357B] px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-[#00224f] transition-all cursor-pointer"
                     >
-                      <span>Tüm Ürünleri Gör</span>
+                      <span>Tüm Teklifleri İncele</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -671,16 +708,13 @@ export const Header: React.FC = () => {
             {/* 3. KAMPANYALAR */}
             <Link
               to="/kampanyalar"
-              className={`inline-flex items-center gap-1 px-3.5 py-2 text-sm font-bold rounded-lg transition-colors ${
+              className={`inline-flex items-center px-3.5 py-2 text-sm font-bold rounded-lg transition-colors ${
                 location.pathname === '/kampanyalar'
                   ? 'text-[#00357B] bg-[#eaf1fa]'
                   : 'text-[#00357B] hover:text-[#00224f] hover:bg-[#eaf1fa]'
               }`}
             >
               <span>{t('nav.campaigns')}</span>
-              <span className="ml-1 inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.2 text-[10px] font-extrabold text-amber-800">
-                Fırsat
-              </span>
             </Link>
 
             {/* 4. ANLAŞMALI KURUMLAR */}
@@ -815,9 +849,7 @@ export const Header: React.FC = () => {
                     <Gift className="h-4 w-4 text-amber-600" />
                     <span>{t('nav.campaigns')}</span>
                   </span>
-                  <span className="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full">
-                    5 Kampanya
-                  </span>
+                  <ArrowRight className="h-4 w-4 text-slate-400" />
                 </Link>
 
                 {/* 4. Anlaşmalı Kurumlar */}

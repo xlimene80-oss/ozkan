@@ -23,7 +23,7 @@ export const ConsultantWidget: React.FC = () => {
   const isTr = language === 'tr';
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showBubble, setShowBubble] = useState(true);
+  const [showBubble, setShowBubble] = useState(false);
   const [bubbleIndex, setBubbleIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
