@@ -79,27 +79,27 @@ export const Hero: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* 3. İçerik Alanı: Belirlenen Dikey Sıralama */}
+      {/* 3. İçerik Alanı */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 lg:pt-16 pb-20 sm:pb-24 lg:pb-28">
         <div className="max-w-2xl lg:max-w-3xl text-left">
           {/* 1. En Üstte: Ana Başlık & Açıklama Metni */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.12] tracking-tight drop-shadow-sm mb-3.5 sm:mb-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.12] tracking-tight drop-shadow-sm mb-3.5 sm:mb-4 text-center sm:text-left">
             <span className="block text-white">13 Sigorta</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-50 to-blue-200">
               Ailemize Hoş Geldiniz
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base md:text-lg text-blue-100/90 font-normal leading-relaxed max-w-2xl mb-6 sm:mb-7">
+          <p className="text-sm sm:text-base md:text-lg text-blue-100/90 font-normal leading-relaxed max-w-2xl mb-6 sm:mb-7 text-center sm:text-left">
             Aracınızdan sağlığınıza, yuvanızdan geleceğinize kadar her an yanınızdayız.
           </p>
 
-          {/* 2. Açıklamanın Hemen Altında: Turuncu Renkli "Hemen Ücretsiz Teklif Al" Ana Butonu */}
-          <div className="mb-6 sm:mb-8">
+          {/* 2. Açıklamanın Hemen Altında: Yatayda Ortalanmış (Üst Ortaya) Turuncu Ana Buton */}
+          <div className="flex justify-center w-full mb-6 sm:mb-8">
             <a
               href="#teklif"
               onClick={scrollToOffer}
-              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-sm sm:text-base px-7 sm:px-9 py-3.5 sm:py-4 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-sm sm:text-base px-8 sm:px-10 py-3.5 sm:py-4 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer text-center"
             >
               <Sparkles className="h-5 w-5 text-slate-950" />
               <span>Hemen Ücretsiz Teklif Al</span>
@@ -133,11 +133,11 @@ export const Hero: React.FC = () => {
             ))}
           </div>
 
-          {/* 4. En Altta: (4 Kategori Kartının Altında) "Bize Ulaşın" Butonu */}
-          <div className="pt-1">
+          {/* 4. En Altta: (4 Kategori Kartının Altında) Ortalanmış "Bize Ulaşın" Butonu */}
+          <div className="flex justify-center w-full pt-2">
             <Link
               to="/iletisim"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base px-7 sm:px-9 py-3 sm:py-3.5 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
             >
               <Phone className="h-4 w-4 text-emerald-400" />
               <span>Bize Ulaşın</span>
