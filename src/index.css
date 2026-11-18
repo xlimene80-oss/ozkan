@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    /* 13 SİGORTA Tasarım Değişkenleri */
-    --brand: #0284c7;        /* Canlı gök mavisi */
-    --brand-dark: #0369a1;
-    --brand-soft: #e0f2fe;
+    /* 13 SİGORTA - Allianz Laciverti (#00357B) Marka Renk Paleti */
+    --brand: #00357B;        /* Allianz Laciverti */
+    --brand-dark: #00224f;   /* Koyu Allianz Laciverti */
+    --brand-soft: #eaf1fa;   /* Açık Lacivert Yumuşak Arka Plan */
     --accent: #d97706;       /* Sıcak kehribar / altın */
     --accent-soft: #fef3c7;
     --text: #0f172a;         /* Koyu arduvaz */
@@ -56,7 +56,7 @@
   .product-card-hover:hover {
     transform: translateY(-2px);
     border-color: var(--brand);
-    box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.1), 0 4px 6px -4px rgba(2, 132, 199, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 53, 123, 0.12), 0 4px 6px -4px rgba(0, 53, 123, 0.1);
   }
 }
 
@@ -68,7 +68,7 @@
   }
   50% {
     transform: scale(1.06);
-    box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.35);
+    box-shadow: 0 10px 15px -3px rgba(0, 53, 123, 0.35);
   }
 }
 

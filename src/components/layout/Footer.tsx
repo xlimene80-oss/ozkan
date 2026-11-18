@@ -2,78 +2,105 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../../config/site.js';
 import { PRODUCTS } from '../../data/products.js';
-import { buildWhatsAppLink, generateGeneralWhatsAppMessage } from '../../utils/whatsapp.js';
-import { Phone, Mail, MapPin, Clock, Shield, MessageCircle } from 'lucide-react';
+import { Logo } from './Logo.js';
+import { Phone, Mail, MapPin, Clock, MessageCircle, Shield, ArrowRight } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const generalMsg = generateGeneralWhatsAppMessage();
-  const wa = buildWhatsAppLink(siteConfig.whatsappNumarasi, generalMsg);
-
   return (
     <footer className="mt-auto border-t border-slate-200 bg-white text-slate-600 text-sm">
       {/* Üst Bilgi Alanı */}
-      <div className="mx-auto max-w-7xl px-3 py-10 sm:py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Kolon 1: Acente Bilgileri */}
+      <div className="mx-auto max-w-7xl px-3 py-10 sm:py-14 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+          {/* Kolon 1: Acente Bilgileri & Kurumsal Logo (Lacivert Logo Beyaz Zemin Üzerinde) */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-600 text-white">
-                <Shield className="h-5 w-5" />
-              </div>
-              <span className="text-lg font-bold text-slate-900">{siteConfig.acenteKisaAd}</span>
+            <div className="flex items-center">
+              <Logo variant="blue" imgClassName="h-10 w-auto" />
             </div>
             <p className="font-medium text-slate-800 text-xs leading-relaxed">
               {siteConfig.acenteUnvani}
             </p>
-            <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-xs space-y-1">
-              <p className="font-semibold text-slate-800">
-                TOBB Levha No: <span className="font-mono text-sky-700">{siteConfig.levhaNo}</span>
+            <div className="rounded-xl bg-[#eaf1fa] border border-blue-100 p-3.5 text-xs space-y-1">
+              <p className="font-bold text-[#00357B]">
+                TOBB Levha No: <span className="font-mono text-slate-900">{siteConfig.levhaNo}</span>
               </p>
-              <p className="text-slate-600">{siteConfig.yetkiliSirket}</p>
+              <p className="text-slate-700">{siteConfig.yetkiliSirket}</p>
             </div>
-            {/* WhatsApp Butonu (Düz, PII içermeyen) */}
+            {/* WhatsApp Butonu */}
             <div>
               <a
-                href={wa.primaryUrl}
+                href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors shadow-xs"
               >
                 <MessageCircle className="h-4 w-4 text-emerald-600" />
-                <span>WhatsApp ile Yazın</span>
+                <span>WhatsApp Danışma Hattı</span>
               </a>
             </div>
           </div>
 
-          {/* Kolon 2: Hızlı Ürün Bağlantıları */}
+          {/* Kolon 2: Hızlı Ürün Bağlantıları (10 Branş) */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#00357B] mb-3">
               Sigorta Çözümlerimiz
             </h4>
-            <ul className="space-y-2 text-xs">
-              {PRODUCTS.slice(0, 5).map((p) => (
+            <ul className="space-y-1.5 text-xs">
+              {PRODUCTS.slice(0, 6).map((p) => (
                 <li key={p.id}>
-                  <Link to={`/teklif/${p.slug}`} className="hover:text-sky-700 transition-colors">
-                    {p.title}
+                  <Link
+                    to={`/teklif/${p.slug}`}
+                    className="hover:text-[#00357B] hover:underline transition-colors flex items-center justify-between"
+                  >
+                    <span>{p.title}</span>
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  to="/#teklif"
+                  className="text-xs font-bold text-[#00357B] hover:underline flex items-center gap-1 pt-1"
+                >
+                  <span>Tüm 10 Branşı İncele</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Kolon 3: Teknik Personel & Çalışma Saatleri */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
-              Yetkili Teknik Personel
-            </h4>
-            <ul className="text-xs space-y-1 text-slate-600">
-              {siteConfig.teknikPersonel.map((staff, idx) => (
-                <li key={idx} className="flex flex-col">
-                  <span className="font-medium text-slate-800">{staff.ad}</span>
-                  <span className="text-[11px] text-slate-500 font-mono">SEGEM: {staff.kayitNo}</span>
+          {/* Kolon 3: Hızlı Sayfalar & Teknik Kadro */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#00357B] mb-2.5">
+                Kurumsal & Hizmetler
+              </h4>
+              <ul className="space-y-1.5 text-xs">
+                <li>
+                  <Link to="/kampanyalar" className="hover:text-[#00357B] transition-colors">
+                    Özel Kampanyalar & İndirimler
+                  </Link>
                 </li>
-              ))}
-            </ul>
+                <li>
+                  <Link to="/anlasmali-kurumlar" className="hover:text-[#00357B] transition-colors">
+                    Anlaşmalı Hastane ve Servisler
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/hasar-bildirimi" className="hover:text-[#00357B] transition-colors">
+                    Hasar Rehberi & Acil İhbar
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/hakkimizda" className="hover:text-[#00357B] transition-colors">
+                    Hakkımızda & Acentelik
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/iletisim" className="hover:text-[#00357B] transition-colors">
+                    İletişim & Danışma Hatları
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
             <div className="pt-2 border-t border-slate-100">
               <h5 className="text-xs font-bold text-slate-900 flex items-center gap-1.5 mb-1">
@@ -84,29 +111,40 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Kolon 4: İletişim Bilgileri */}
+          {/* Kolon 4: 4 İletişim Telefon Numarası */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
-              İletişim
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#00357B] mb-2">
+              İletişim & Destek Hatları
             </h4>
-            <div className="text-xs space-y-2.5">
-              <p className="flex items-start gap-2 text-slate-600">
-                <MapPin className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
-                <span>{siteConfig.adres}</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-slate-400 shrink-0" />
-                <a href={siteConfig.telefon} className="font-semibold text-slate-800 hover:text-sky-700">
-                  {siteConfig.telefonDisplay}
-                </a>
-              </p>
-              <p className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-slate-400 shrink-0" />
-                <a href={`mailto:${siteConfig.eposta}`} className="text-slate-600 hover:text-sky-700">
-                  {siteConfig.eposta}
-                </a>
-              </p>
+            <div className="space-y-2 text-xs">
+              {siteConfig.iletisimNumaralari.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between border-b border-slate-100 pb-1.5 last:border-0">
+                  <div className="min-w-0 pr-1">
+                    <span className="text-[10px] text-slate-500 block truncate">{item.label}</span>
+                    <a
+                      href={`tel:+${item.raw}`}
+                      className="font-bold text-slate-800 hover:text-[#00357B] font-mono text-xs"
+                    >
+                      {item.tel}
+                    </a>
+                  </div>
+                  <a
+                    href={`https://wa.me/${item.raw}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-600 hover:text-emerald-700 p-1"
+                    title="WhatsApp"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+              ))}
             </div>
+
+            <p className="text-[11px] text-slate-500 pt-1 flex items-start gap-1.5">
+              <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0 mt-0.5" />
+              <span>{siteConfig.adres}</span>
+            </p>
           </div>
         </div>
 

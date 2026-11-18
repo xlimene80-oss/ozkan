@@ -5,6 +5,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        allianz: {
+          DEFAULT: '#00357B',
+          dark: '#00224f',
+          light: '#0047a5',
+          soft: '#eaf1fa',
+        },
         brand: {
           DEFAULT: 'var(--brand)',
           dark: 'var(--brand-dark)',

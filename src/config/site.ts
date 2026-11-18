@@ -3,6 +3,14 @@ export interface TechnicalStaff {
   kayitNo: string;
 }
 
+export interface ContactPhone {
+  tel: string;
+  raw: string;
+  label: string;
+  sublabel: string;
+  isPrimary?: boolean;
+}
+
 export interface SiteConfig {
   acenteUnvani: string;
   acenteKisaAd: string;
@@ -14,6 +22,7 @@ export interface SiteConfig {
   telefonDisplay: string;
   eposta: string;
   whatsappNumarasi: string; // 90 ile başlayan uluslararası biçim, + olmadan
+  iletisimNumaralari: ContactPhone[];
   calismaSaatleri: string;
   danismanAdi: string;
   consentVersion: string;
@@ -25,6 +34,7 @@ export interface SiteConfig {
 
 /**
  * 13 SİGORTA - Acente Konfigürasyonu
+ * Ana Marka Rengi: Allianz Laciverti (#00357B)
  */
 export const siteConfig: SiteConfig = {
   acenteUnvani: '13 Sigorta Aracılık Hizmetleri Ltd. Şti.',
@@ -37,15 +47,42 @@ export const siteConfig: SiteConfig = {
   // YASAL KURAL: Allianz adı yalnızca bu onaylı yetkili acente ifadesinde düz metin olarak geçer.
   yetkiliSirket: 'Allianz Sigorta A.Ş. yetkili acentesidir.',
   adres: 'Barbaros Mah. Begonya Sok. No: 13/A Ataşehir / İstanbul',
-  telefon: 'tel:+908503081313',
-  telefonDisplay: '0850 308 13 13',
+  telefon: 'tel:+905436961313',
+  telefonDisplay: '0543 696 13 13',
   eposta: 'bilgi@13sigorta.com',
-  whatsappNumarasi: '905321313013', // 90 ile başlar, + ve boşluk yok
-  calismaSaatleri: 'Hafta İçi: 09:00 - 18:00 | Cumartesi: 09:00 - 13:00',
+  whatsappNumarasi: '905436961313', // 0543 696 13 13
+  iletisimNumaralari: [
+    {
+      tel: '0543 696 13 13',
+      raw: '905436961313',
+      label: 'Genel Merkez & WhatsApp',
+      sublabel: 'Tüm teklif, poliçe ve müşteri danışma hattı',
+      isPrimary: true,
+    },
+    {
+      tel: '0546 696 13 08',
+      raw: '905466961308',
+      label: 'Teklif & Müşteri Temsilcisi',
+      sublabel: 'Kasko, Sağlık, BES ve Konut teklif danışmanı',
+    },
+    {
+      tel: '0532 701 95 99',
+      raw: '905327019599',
+      label: 'Poliçe & Operasyon Hattı',
+      sublabel: 'Mevcut poliçe yenileme, zeyil ve tahsilat işlemleri',
+    },
+    {
+      tel: '0533 250 97 13',
+      raw: '905332509713',
+      label: '7/24 Hasar Destek & Acil Yardım',
+      sublabel: 'Kaza, acil yardım, ikame araç ve çekici koordinasyonu',
+    },
+  ],
+  calismaSaatleri: 'Hafta İçi: 09:00 - 18:00 | Cumartesi: 09:00 - 13:00 (7/24 Hasar Destek)',
   danismanAdi: '13 Sigorta Danışmanı',
   consentVersion: 'v1.0',
-  hasarHatti: '0850 308 13 13',
+  hasarHatti: '0533 250 97 13',
   hasarBilgiNotu: 'Hasar anında 7/24 acente destek hattımızdan uzman teknik personelimize ulaşabilirsiniz.',
   siteUrl: 'https://13sigorta.com',
-  surum: 'v1.0.0',
+  surum: 'v2.0.0',
 };
