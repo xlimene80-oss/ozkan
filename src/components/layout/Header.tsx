@@ -160,13 +160,8 @@ export const Header: React.FC = () => {
       {/* ========================================================= */}
       <div className="w-full bg-[#00357B] text-white border-b border-blue-900/40 relative z-30">
         <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
-          {/* 1. En Sol: 13 Sigorta Logosu (Beyaz Versiyon) */}
-          <div className="flex items-center shrink-0">
-            <Logo variant="white" imgClassName="h-8 sm:h-10 w-auto" />
-          </div>
-
-          {/* 2. Sol Orta: WhatsApp & Telefon İkonu + 0543 696 13 13 */}
-          <div className="hidden md:flex items-center gap-1.5 shrink-0">
+          {/* 1. DESKTOP SOL KÖŞE: WhatsApp & Telefon İkonu + 0543 696 13 13 */}
+          <div className="hidden lg:flex items-center gap-1.5 shrink-0">
             <div className="flex items-center rounded-full bg-white/10 hover:bg-white/15 border border-white/20 p-1 pl-2 pr-3 transition-colors">
               {/* WhatsApp İkonu */}
               <a
@@ -192,10 +187,47 @@ export const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. Sağ Orta: İnteraktif Arama Kutusu ("Ne aramıştınız?") */}
+          {/* MOBİL SOL & ORTA ALAN: Sol 13 Logosu, Orta WhatsApp & Telefon */}
+          <div className="flex lg:hidden items-center justify-between flex-1 min-w-0 pr-2">
+            {/* 1. Sol: 13 Logosu */}
+            <Link to="/" className="flex items-center shrink-0 pr-1.5" aria-label="13 Sigorta Ana Sayfa">
+              <img
+                src="/logo-white.png"
+                alt="13 Sigorta"
+                className="h-8 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = '/logo.png';
+                }}
+              />
+            </Link>
+
+            {/* 2. Orta: Yeşil WhatsApp + Telefon ikonu ve 0543 696 13 13 */}
+            <div className="flex items-center rounded-full bg-white/10 border border-white/20 p-0.5 pl-1.5 pr-2.5 shrink-0">
+              <a
+                href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white mr-1.5"
+                title="WhatsApp Danışma"
+                aria-label="WhatsApp Danışma"
+              >
+                <MessageCircle className="h-3 w-3 fill-white text-emerald-500" />
+              </a>
+              <a
+                href={siteConfig.telefon}
+                className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-white hover:text-emerald-300 transition-colors tracking-tight"
+                title="Telefon ile arayın"
+              >
+                <Phone className="h-3 w-3 text-emerald-400" />
+                <span>{siteConfig.telefonDisplay}</span>
+              </a>
+            </div>
+          </div>
+
+          {/* DESKTOP ORTA: İnteraktif Arama Kutusu ("Ne aramıştınız?") */}
           <div
             ref={searchContainerRef}
-            className="hidden sm:flex relative flex-1 max-w-xs md:max-w-sm lg:max-w-md mx-2"
+            className="hidden sm:flex relative flex-1 max-w-xs md:max-w-sm lg:max-w-md mx-2 lg:mx-4"
           >
             <div className="relative w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 pointer-events-none" />
@@ -361,68 +393,92 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {/* 4. En Sağ: Dil Değiştirici (TR / EN) ve Sağ Aksiyonlar */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* TR / EN Seçici */}
-            <div className="flex items-center rounded-full bg-black/20 p-0.5 border border-white/20 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setLanguage('tr')}
-                className={`px-2.5 py-1 rounded-full transition-all ${
-                  language === 'tr'
-                    ? 'bg-white text-[#00357B] shadow-sm font-extrabold'
-                    : 'text-white/80 hover:text-white'
-                }`}
-                aria-label="Türkçe Dili Seç"
-              >
-                TR
-              </button>
-              <button
-                type="button"
-                onClick={() => setLanguage('en')}
-                className={`px-2.5 py-1 rounded-full transition-all ${
-                  language === 'en'
-                    ? 'bg-white text-[#00357B] shadow-sm font-extrabold'
-                    : 'text-white/80 hover:text-white'
-                }`}
-                aria-label="Select English"
-              >
-                EN
-              </button>
-            </div>
+          {/* DESKTOP SAĞ KÖŞE: PWA + Giriş Yap / Üye Ol */}
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+            <PwaInstallButton variant="header" />
+            <button
+              type="button"
+              onClick={() => {
+                setAuthModalTab('login');
+                setAuthModalOpen(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-white text-[#00357B] hover:bg-slate-100 px-4 py-2 text-xs font-bold shadow-md active:scale-[0.98] transition-all cursor-pointer"
+              aria-label="Giriş Yap veya Üye Ol"
+            >
+              <User className="h-3.5 w-3.5 text-[#00357B]" />
+              <span>Giriş Yap / Üye Ol</span>
+            </button>
+          </div>
 
-            {/* Mobilde Arama Butonu */}
+          {/* MOBİL SAĞ KÖŞE: Arama Butonu + 3 Çizgili Hamburger Butonu (Kenardan Güvenli İçeride) */}
+          <div className="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0 pr-3 sm:pr-5">
             <button
               type="button"
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-              className="sm:hidden flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label="Arama Aç"
             >
               <Search className="h-4 w-4" />
             </button>
 
-            {/* Mobilde WhatsApp Kısayolu */}
-            <a
-              href={`https://wa.me/${siteConfig.whatsappNumarasi}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="md:hidden flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm"
-              aria-label="WhatsApp Danışma"
-            >
-              <MessageCircle className="h-4 w-4 fill-white text-emerald-500" />
-            </a>
-
-            {/* Mobilde Hamburger Menü Butonu */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 focus:outline-none"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-white hover:bg-white/25 focus:outline-none border border-white/20 transition-colors"
               aria-expanded={mobileMenuOpen}
               aria-label="Menüyü Aç"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
+        </div>
+
+        {/* MOBİL YATAY KAYDIRILABİLİR HIZLI ERİŞİM BARI */}
+        <div className="lg:hidden w-full bg-white border-b border-slate-200 overflow-x-auto whitespace-nowrap py-2 px-3 flex items-center gap-2 text-xs font-bold text-[#00357B] scrollbar-none shadow-xs">
+          <button
+            type="button"
+            onClick={handleOfferClick}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#eaf1fa] hover:bg-[#d6e5f7] shrink-0 transition-colors text-[#00357B]"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <span>Teklif Al</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(true);
+              setMobileProductsOpen(true);
+            }}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-slate-100 shrink-0 transition-colors text-[#00357B]"
+          >
+            <span>Ürünler</span>
+            <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+          </button>
+          <Link
+            to="/kampanyalar"
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full shrink-0 transition-colors text-[#00357B] ${
+              location.pathname === '/kampanyalar' ? 'bg-[#eaf1fa]' : 'hover:bg-slate-100'
+            }`}
+          >
+            <span>Kampanyalar</span>
+            <span className="bg-amber-100 text-amber-800 text-[10px] px-1 rounded font-extrabold">Fırsat</span>
+          </Link>
+          <Link
+            to="/anlasmali-kurumlar"
+            className={`inline-flex items-center px-3 py-1.5 rounded-full shrink-0 transition-colors text-[#00357B] ${
+              location.pathname === '/anlasmali-kurumlar' ? 'bg-[#eaf1fa]' : 'hover:bg-slate-100'
+            }`}
+          >
+            <span>Anlaşmalı Kurumlar</span>
+          </Link>
+          <Link
+            to="/iletisim"
+            className={`inline-flex items-center px-3 py-1.5 rounded-full shrink-0 transition-colors text-[#00357B] ${
+              location.pathname === '/iletisim' ? 'bg-[#eaf1fa]' : 'hover:bg-slate-100'
+            }`}
+          >
+            <span>İletişim</span>
+          </Link>
         </div>
 
         {/* Mobilde Açılır Arama Çubuğu */}
@@ -497,12 +553,12 @@ export const Header: React.FC = () => {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. SIRA: ANA NAVİGASYON MENÜSÜ (BEYAZ ARKA PLAN - LACİVERT YAZILAR) */}
+      {/* 2. SIRA: ANA NAVİGASYON MENÜSÜ (BEYAZ ARKA PLAN - LACİVERT YAZILAR - DENGELİ VE ORTALI) */}
       {/* ========================================================= */}
       <div className="hidden lg:block w-full bg-white border-b border-slate-200">
-        <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-6 lg:px-8">
-          {/* Soldan Sağa Tam 5 Başlık */}
-          <nav className="flex items-center gap-1 xl:gap-3" aria-label="Ana Navigasyon">
+        <div className="mx-auto flex h-12 max-w-7xl items-center justify-center px-6 lg:px-8">
+          {/* Soldan Sağa Tam 5 Başlık - Dengeli ve Ortalı */}
+          <nav className="flex items-center gap-3 xl:gap-6" aria-label="Ana Navigasyon">
             {/* 1. TEKLİF AL */}
             <button
               type="button"
@@ -653,23 +709,6 @@ export const Header: React.FC = () => {
               <span>{t('nav.contact')}</span>
             </Link>
           </nav>
-
-          {/* Sağ Alan: "Giriş Yap / Üye Ol" Butonu ve PWA */}
-          <div className="flex items-center gap-2.5">
-            <PwaInstallButton variant="header" />
-            <button
-              type="button"
-              onClick={() => {
-                setAuthModalTab('login');
-                setAuthModalOpen(true);
-              }}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#00357B] px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-[#00224f] active:scale-[0.98] transition-all cursor-pointer"
-              aria-label={language === 'tr' ? 'Giriş Yap veya Üye Ol' : 'Login or Sign Up'}
-            >
-              <User className="h-3.5 w-3.5" />
-              <span>{language === 'tr' ? 'Giriş Yap / Üye Ol' : 'Login / Sign Up'}</span>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -700,33 +739,8 @@ export const Header: React.FC = () => {
                 </button>
               </div>
 
-              {/* Dil ve PWA */}
-              <div className="mt-3 flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <span className="text-xs font-semibold text-slate-600">Dil Seçimi:</span>
-                <div className="flex items-center rounded-lg bg-white p-0.5 border border-slate-200 text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setLanguage('tr')}
-                    className={`px-3 py-1 rounded-md transition-all ${
-                      language === 'tr' ? 'bg-[#00357B] text-white' : 'text-slate-600'
-                    }`}
-                  >
-                    TR
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLanguage('en')}
-                    className={`px-3 py-1 rounded-md transition-all ${
-                      language === 'en' ? 'bg-[#00357B] text-white' : 'text-slate-600'
-                    }`}
-                  >
-                    EN
-                  </button>
-                </div>
-              </div>
-
               {/* Mobilde Giriş Yap / Üye Ol Butonu */}
-              <div className="mt-3">
+              <div className="mt-4">
                 <button
                   type="button"
                   onClick={() => {
@@ -737,7 +751,7 @@ export const Header: React.FC = () => {
                   className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00357B] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#00224f] transition-all cursor-pointer"
                 >
                   <User className="h-4 w-4" />
-                  <span>{language === 'tr' ? 'Giriş Yap / Üye Ol' : 'Login / Sign Up'}</span>
+                  <span>Giriş Yap / Üye Ol</span>
                 </button>
               </div>
 

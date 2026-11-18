@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext.js';
 import { usePwaInstall } from '../../hooks/usePwaInstall.js';
 import { PwaInstallModal } from './PwaInstallModal.js';
+import { COOKIE_CONSENT_KEY } from '../privacy/CookiePreferences.js';
+import { safeGetLocal } from '../../utils/storage.js';
 import { X, Smartphone, QrCode, Sparkles } from 'lucide-react';
 
 export const AppDownloadQrCard: React.FC = () => {
   const { language } = useLanguage();
   const isTr = language === 'tr';
   const [dismissed, setDismissed] = useState(false);
+  const [hasCookieBanner, setHasCookieBanner] = useState(!safeGetLocal(COOKIE_CONSENT_KEY));
   const { triggerInstall, showModal, setShowModal, isIos, isStandalone } = usePwaInstall();
+
+  useEffect(() => {
+    const handler = () => {
+      setHasCookieBanner(!safeGetLocal(COOKIE_CONSENT_KEY));
+    };
+    window.addEventListener('cookie_consent_changed', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('cookie_consent_changed', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
 
   // Zaten PWA modunda çalışıyorsa veya kullanıcı kapattıysa gösterme
   if (dismissed || isStandalone) return null;
@@ -16,7 +31,9 @@ export const AppDownloadQrCard: React.FC = () => {
   return (
     <>
       <div
-        className="hidden lg:flex fixed bottom-5 right-24 z-30 items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 shadow-xl backdrop-blur-md hover:shadow-2xl hover:border-[#00357B]/40 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 group cursor-pointer"
+        className={`hidden lg:flex fixed ${
+          hasCookieBanner ? 'bottom-56' : 'bottom-5'
+        } left-5 z-40 items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 shadow-xl backdrop-blur-md hover:shadow-2xl hover:border-[#00357B]/40 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 group cursor-pointer`}
         onClick={triggerInstall}
         role="button"
         tabIndex={0}

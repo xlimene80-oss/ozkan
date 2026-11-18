@@ -58,6 +58,7 @@ export const CookiePreferences: React.FC = () => {
     safeSetLocal(COOKIE_CONSENT_KEY, JSON.stringify(state));
     setShowBanner(false);
     setShowModal(false);
+    window.dispatchEvent(new Event('cookie_consent_changed'));
   };
 
   const handleAcceptAll = () => {
