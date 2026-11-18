@@ -29,13 +29,17 @@ import {
   Sparkles,
   PhoneCall,
   Check,
+  User,
 } from 'lucide-react';
 import { PwaInstallButton } from '../pwa/PwaInstallButton.js';
+import { CustomerAuthModal } from '../auth/CustomerAuthModal.js';
 
 export const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productsMegaOpen, setProductsMegaOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
@@ -650,16 +654,20 @@ export const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Sağ Alan: Hızlı Teklif Butonu ve PWA */}
-          <div className="flex items-center gap-3">
+          {/* Sağ Alan: "Giriş Yap / Üye Ol" Butonu ve PWA */}
+          <div className="flex items-center gap-2.5">
             <PwaInstallButton variant="header" />
             <button
               type="button"
-              onClick={handleOfferClick}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#00357B] px-4 py-1.5 text-xs font-bold text-white shadow hover:bg-[#00224f] active:scale-[0.98] transition-all"
+              onClick={() => {
+                setAuthModalTab('login');
+                setAuthModalOpen(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#00357B] px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-[#00224f] active:scale-[0.98] transition-all cursor-pointer"
+              aria-label={language === 'tr' ? 'Giriş Yap veya Üye Ol' : 'Login or Sign Up'}
             >
-              <span>{t('hero.cta')}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <User className="h-3.5 w-3.5" />
+              <span>{language === 'tr' ? 'Giriş Yap / Üye Ol' : 'Login / Sign Up'}</span>
             </button>
           </div>
         </div>
@@ -715,6 +723,22 @@ export const Header: React.FC = () => {
                     EN
                   </button>
                 </div>
+              </div>
+
+              {/* Mobilde Giriş Yap / Üye Ol Butonu */}
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setAuthModalTab('login');
+                    setAuthModalOpen(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00357B] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#00224f] transition-all cursor-pointer"
+                >
+                  <User className="h-4 w-4" />
+                  <span>{language === 'tr' ? 'Giriş Yap / Üye Ol' : 'Login / Sign Up'}</span>
+                </button>
               </div>
 
               {/* Mobil Navigasyon Öğeleri */}
@@ -872,6 +896,13 @@ export const Header: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Müşteri Giriş Yap / Üye Ol Modalı */}
+      <CustomerAuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialTab={authModalTab}
+      />
     </header>
   );
 };

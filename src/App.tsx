@@ -14,6 +14,7 @@ import { LegalPage } from './pages/LegalPage.js';
 import { AdminPage } from './pages/admin/AdminPage.js';
 import { ConsultantWidget } from './components/widget/ConsultantWidget.js';
 import { CookiePreferences } from './components/privacy/CookiePreferences.js';
+import { AppDownloadQrCard } from './components/pwa/AppDownloadQrCard.js';
 import { API_BASE_URL } from './config/api.js';
 
 export const App: React.FC = () => {
@@ -49,7 +50,8 @@ export const App: React.FC = () => {
           </main>
           <Footer />
 
-          {/* Aşama 3: Danışman Widget'ı (Sağ Alt) ve Çerez Tercihleri (Sol Alt) */}
+          {/* Aşama 3: Danışman Widget'ı (Sağ Alt), QR Kodlu Uygulama İndir Kartı ve Çerez Tercihleri (Sol Alt) */}
+          <AppDownloadQrCard />
           <ConsultantWidget />
           <CookiePreferences />
         </div>

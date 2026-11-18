@@ -22,6 +22,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.campaigns': 'Kampanyalar',
     'nav.institutions': 'Anlaşmalı Kurumlar',
     'nav.contact': 'İletişim',
+    'nav.login': 'Giriş Yap / Üye Ol',
 
     // Mega Menu
     'menu.allProducts': 'Tüm Sigorta Branşları',
@@ -72,6 +73,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.campaigns': 'Campaigns',
     'nav.institutions': 'Contracted Institutions',
     'nav.contact': 'Contact Us',
+    'nav.login': 'Login / Sign Up',
 
     // Mega Menu
     'menu.allProducts': 'All Insurance Branches',

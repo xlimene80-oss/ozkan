@@ -3,8 +3,8 @@ import { siteConfig } from '../../config/site.js';
 import { safeGetSession, safeSetSession } from '../../utils/storage.js';
 import { buildWhatsAppLink, generateLeadWhatsAppMessage } from '../../utils/whatsapp.js';
 import { API_BASE_URL, parseJsonResponse } from '../../config/api.js';
+import { useLanguage } from '../../context/LanguageContext.js';
 import {
-  Bot,
   X,
   Send,
   MessageCircle,
@@ -13,13 +13,19 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 
-const CONSULTANT_BALLOON_KEY = '13sigorta_consultant_balloon_shown';
+const CONSULTANT_BALLOON_KEY = '13sigorta_robot_balloon_interacted';
 
 export const ConsultantWidget: React.FC = () => {
+  const { language } = useLanguage();
+  const isTr = language === 'tr';
+
   const [isOpen, setIsOpen] = useState(false);
-  const [showBalloon, setShowBalloon] = useState(false);
+  const [showBubble, setShowBubble] = useState(true);
+  const [bubbleIndex, setBubbleIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Form Verileri
   const [name, setName] = useState('');
@@ -38,17 +44,27 @@ export const ConsultantWidget: React.FC = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  // 5 Saniye Sonra Balon Gösterimi (Oturumda bir kez - sessionStorage)
+  const bubbleMessages = isTr
+    ? [
+        'Size nasıl yardımcı olabilirim? 👋',
+        'Hemen teklif alalım! ✨',
+        'Sorularınız için buradayım! 💬',
+        'Allianz avantajlarını keşfedin! 🛡️',
+      ]
+    : [
+        'How can I help you? 👋',
+        'Get a fast quote! ✨',
+        'I am here for your questions! 💬',
+        'Explore Allianz benefits! 🛡️',
+      ];
+
+  // Konuşma Balonunu Belirli Aralıklarla Değiştirme
   useEffect(() => {
-    const hasShown = safeGetSession(CONSULTANT_BALLOON_KEY);
-    if (!hasShown) {
-      const timer = setTimeout(() => {
-        setShowBalloon(true);
-        safeSetSession(CONSULTANT_BALLOON_KEY, 'true');
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+    const interval = setInterval(() => {
+      setBubbleIndex((prev) => (prev + 1) % bubbleMessages.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [bubbleMessages.length]);
 
   // Esc Tuşu ile Kapatma ve Focus Trap
   useEffect(() => {
@@ -77,7 +93,7 @@ export const ConsultantWidget: React.FC = () => {
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
-    setShowBalloon(false);
+    setShowBubble(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,19 +101,27 @@ export const ConsultantWidget: React.FC = () => {
     setErrorMessage(null);
 
     if (!name.trim() || name.trim().length < 2) {
-      setErrorMessage('Lütfen adınızı ve soyadınızı giriniz.');
+      setErrorMessage(isTr ? 'Lütfen adınızı ve soyadınızı giriniz.' : 'Please enter your full name.');
       return;
     }
     if (!phone.trim() || phone.trim().length < 10) {
-      setErrorMessage('Lütfen geçerli bir cep telefonu numarası giriniz (05xx...).');
+      setErrorMessage(
+        isTr
+          ? 'Lütfen geçerli bir cep telefonu numarası giriniz (05xx...).'
+          : 'Please enter a valid phone number.'
+      );
       return;
     }
     if (message.trim().length < 10) {
-      setErrorMessage('Mesajınız en az 10 karakter olmalıdır.');
+      setErrorMessage(
+        isTr ? 'Mesajınız en az 10 karakter olmalıdır.' : 'Message must be at least 10 characters.'
+      );
       return;
     }
     if (!kvkkAccepted) {
-      setErrorMessage('Devam etmek için KVKK onayını vermeniz gerekmektedir.');
+      setErrorMessage(
+        isTr ? 'Devam etmek için KVKK onayını vermeniz gerekmektedir.' : 'Please accept the privacy policy.'
+      );
       return;
     }
 
@@ -135,9 +159,13 @@ export const ConsultantWidget: React.FC = () => {
     } catch (err: any) {
       clearTimeout(timeoutId);
       if (err.name === 'AbortError') {
-        setErrorMessage('Bağlantı zaman aşımına uğradı. Beklemeden WhatsApp ile yazabilirsiniz.');
+        setErrorMessage(
+          isTr
+            ? 'Bağlantı zaman aşımına uğradı. Beklemeden WhatsApp ile yazabilirsiniz.'
+            : 'Connection timeout. You can message us via WhatsApp.'
+        );
       } else {
-        setErrorMessage(err.message || 'Bağlantı hatası. WhatsApp ile yazabilirsiniz.');
+        setErrorMessage(err.message || (isTr ? 'Bağlantı hatası oluştu.' : 'Connection error.'));
       }
     } finally {
       setLoading(false);
@@ -155,39 +183,81 @@ export const ConsultantWidget: React.FC = () => {
 
   return (
     <>
-      {/* 5 Sn Sonra Açılan "Yardıma mı ihtiyacınız var?" Balonu */}
-      {showBalloon && !isOpen && (
-        <div className="fixed bottom-22 right-4 sm:right-6 z-30 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xl max-w-xs animate-in fade-in slide-in-from-bottom-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 text-sky-600 shrink-0">
-            <Bot className="h-4 w-4" />
+      {/* Sevimli Konuşma Balonu (Robotun Hemen Üstünde) */}
+      {showBubble && !isOpen && (
+        <div
+          onClick={handleToggle}
+          className="fixed bottom-24 right-4 sm:right-6 z-40 max-w-[220px] sm:max-w-[240px] rounded-2xl border border-slate-200/90 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-md cursor-pointer transition-all duration-300 hover:scale-105 group animate-speech-bubble"
+          role="button"
+          tabIndex={0}
+          aria-label="Yardımcı Robot Mesajı"
+        >
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="text-[11px] sm:text-xs font-bold text-slate-900 group-hover:text-[#00357B] transition-colors leading-tight">
+              {bubbleMessages[bubbleIndex]}
+            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowBubble(false);
+              }}
+              className="text-slate-400 hover:text-slate-700 p-0.5 rounded shrink-0"
+              aria-label="Balonu Kapat"
+            >
+              <X className="h-3 w-3" />
+            </button>
           </div>
-          <div className="text-xs text-slate-700 leading-tight">
-            <p className="font-semibold text-slate-900 mb-0.5">Yardıma mı ihtiyacınız var?</p>
-            <p className="text-slate-500">Sigorta danışmanımıza anında mesaj bırakabilirsiniz.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowBalloon(false)}
-            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 ml-1"
-            aria-label="Balonu kapat"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+
+          {/* Konuşma Balonunun Küçük Oku */}
+          <div className="absolute -bottom-1.5 right-7 h-3 w-3 rotate-45 border-r border-b border-slate-200 bg-white" />
         </div>
       )}
 
-      {/* Sağ Altta Sabit 56-60px Yuvarlak Danışman Butonu (Online yeşil nokta YOK, 3 pulse yapıp durur) */}
-      <button
-        type="button"
-        onClick={handleToggle}
-        className="animate-widget-three fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-sky-600 text-white shadow-xl hover:bg-sky-700 active:scale-95 transition-all focus-visible:outline-brand focus-visible:outline-2"
-        aria-label="Sigorta Danışmanına Yazın"
-        aria-expanded={isOpen}
+      {/* CANLI VE HAREKETLİ (OYNAK) YARDIMCI ROBOT ASİSTAN BUTONU */}
+      <div
+        className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-40 flex flex-col items-center select-none"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-7 w-7" />}
-      </button>
+        <button
+          type="button"
+          onClick={handleToggle}
+          className={`relative flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer ${
+            isHovered
+              ? 'scale-110 -rotate-3 drop-shadow-[0_12px_24px_rgba(0,53,123,0.4)]'
+              : 'animate-robot-alive drop-shadow-[0_8px_18px_rgba(0,53,123,0.25)]'
+          }`}
+          aria-label={isTr ? 'Yardımcı Robot Asistan' : 'Virtual Assistant Robot'}
+          aria-expanded={isOpen}
+          title={isTr ? '13 Sigorta Akıllı Asistan' : '13 Insurance Smart Assistant'}
+        >
+          {isOpen ? (
+            <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-[#00357B] text-white shadow-2xl hover:bg-[#00224f] transition-all border-2 border-white">
+              <X className="h-7 w-7" />
+            </div>
+          ) : (
+            <div className="relative">
+              {/* Canlı Robot İmajı */}
+              <img
+                src="/assistant/robot-wave-256.png"
+                alt="13 Sigorta Akıllı Asistan Robotu"
+                className="h-16 w-16 sm:h-20 sm:w-20 object-contain pointer-events-none transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.src = '/assistant/robot-wave-512.png';
+                }}
+              />
+              {/* Minik Canlı Durum Rozeti */}
+              <span className="absolute bottom-1 right-2 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white" />
+              </span>
+            </div>
+          )}
+        </button>
+      </div>
 
-      {/* Danışman Paneli: Masaüstünde 360px kart, mobilde max 90dvh alttan açılan bottom sheet */}
+      {/* Danışman Paneli Dialog */}
       {isOpen && (
         <div
           className="fixed inset-0 sm:inset-auto sm:bottom-22 sm:right-6 z-50 flex items-end sm:items-start justify-center p-0 sm:p-0 bg-slate-900/30 sm:bg-transparent"
@@ -196,34 +266,39 @@ export const ConsultantWidget: React.FC = () => {
           aria-labelledby="consultant-title"
           ref={modalRef}
         >
-          {/* Mobil Arka Plan Overlay (Tıklayınca Kapatır) */}
+          {/* Mobil Arka Plan Overlay */}
           <div
             className="fixed inset-0 bg-transparent sm:hidden"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
 
-          <div className="relative w-full sm:w-[360px] max-h-[90dvh] sm:max-h-[620px] rounded-t-2xl sm:rounded-2xl border border-slate-200 bg-white shadow-2xl flex flex-col overflow-hidden">
-            {/* Panel Başlığı */}
-            <div className="flex items-center justify-between border-b border-slate-100 bg-sky-700 p-4 text-white">
+          <div className="relative w-full sm:w-[380px] max-h-[90dvh] sm:max-h-[640px] rounded-t-3xl sm:rounded-3xl border border-slate-200 bg-white shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+            {/* Panel Başlığı: Allianz Laciverti & Robot İkonu */}
+            <div className="flex items-center justify-between border-b border-blue-900/40 bg-[#00357B] p-4 text-white">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white">
-                  <Bot className="h-6 w-6" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 p-1 shadow-inner">
+                  <img
+                    src="/assistant/robot-wave-128.png"
+                    alt="Robot"
+                    className="h-9 w-9 object-contain"
+                  />
                 </div>
                 <div>
-                  <h3 id="consultant-title" className="font-bold text-sm leading-tight">
-                    {siteConfig.danismanAdi}
+                  <h3 id="consultant-title" className="font-extrabold text-sm leading-tight flex items-center gap-1.5">
+                    <span>{siteConfig.danismanAdi}</span>
+                    <Sparkles className="h-3.5 w-3.5 text-amber-300" />
                   </h3>
-                  <p className="flex items-center gap-1 text-[11px] text-sky-100/90 mt-0.5">
+                  <p className="flex items-center gap-1 text-[11px] text-blue-100/90 mt-0.5">
                     <Clock className="h-3 w-3" />
-                    <span>{siteConfig.calismaSaatleri.split('|')[0]}</span>
+                    <span>7/24 Kesintisiz Danışma & Destek</span>
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg p-1.5 text-white/80 hover:bg-white/10 hover:text-white"
+                className="rounded-full p-1.5 text-white/80 hover:bg-white/15 hover:text-white transition-colors"
                 aria-label="Kapat"
               >
                 <X className="h-5 w-5" />
@@ -234,49 +309,46 @@ export const ConsultantWidget: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
               {/* Karşılama Balonu */}
               <div className="flex items-start gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 shrink-0 mt-0.5">
-                  <Bot className="h-4 w-4" />
-                </div>
-                <div className="rounded-2xl rounded-tl-none bg-slate-100 p-3 text-xs text-slate-700 leading-relaxed max-w-[85%]">
-                  Merhaba! Size hangi sigorta ürünü konusunda yardımcı olabiliriz? Mesajınızı iletin, en kısa sürede dönüş yapalım.
+                <img
+                  src="/assistant/robot-wave-128.png"
+                  alt="Robot"
+                  className="h-7 w-7 object-contain shrink-0 mt-0.5"
+                />
+                <div className="rounded-2xl rounded-tl-none bg-[#eaf1fa] p-3 text-xs text-slate-800 leading-relaxed border border-blue-100">
+                  {isTr
+                    ? 'Merhaba! Ben 13 Sigorta akıllı asistanınız. Hangi sigorta ürünü veya kampanya hakkında bilgi almak istersiniz?'
+                    : 'Hello! I am your 13 Insurance assistant. How can I help you today?'}
                 </div>
               </div>
 
               {/* Başarı Ekranı */}
               {success ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-5 text-center space-y-3">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 text-center space-y-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 mx-auto">
                     <CheckCircle2 className="h-7 w-7" />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Mesajınız Alındı</h4>
+                  <h4 className="font-bold text-slate-900 text-sm">
+                    {isTr ? 'Mesajınız Alındı!' : 'Message Received!'}
+                  </h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Talebiniz danışmanımıza iletildi. En kısa sürede sizinle iletişime geçeceğiz.
+                    {isTr
+                      ? 'Talebiniz uzman acente danışmanımıza iletildi. En kısa sürede sizinle iletişime geçeceğiz.'
+                      : 'Your request has been received. Our certified agent will get in touch shortly.'}
                   </p>
 
                   <div className="pt-2 border-t border-slate-100">
-                    <p className="text-xs text-slate-500 mb-2">WhatsApp üzerinden de yazabilirsiniz:</p>
+                    <p className="text-xs text-slate-500 mb-2">
+                      {isTr ? 'Beklemeden WhatsApp üzerinden de yazabilirsiniz:' : 'Or message directly on WhatsApp:'}
+                    </p>
                     <a
                       href={wa.primaryUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 transition-colors shadow-sm"
                     >
                       <MessageCircle className="h-4 w-4" />
                       <span>{wa.primaryLabel}</span>
                     </a>
-                    {!wa.isMobile && (
-                      <div className="mt-1.5 text-center">
-                        <a
-                          href={wa.directAppUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] text-slate-400 hover:text-slate-700 underline inline-flex items-center gap-1"
-                        >
-                          <span>Uygulama ile aç</span>
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    )}
                   </div>
 
                   <button
@@ -285,9 +357,9 @@ export const ConsultantWidget: React.FC = () => {
                       setSuccess(false);
                       setMessage('');
                     }}
-                    className="text-xs font-semibold text-sky-700 hover:underline pt-2 block mx-auto"
+                    className="text-xs font-semibold text-[#00357B] hover:underline pt-2 block mx-auto"
                   >
-                    Yeni bir mesaj yaz
+                    {isTr ? 'Yeni bir mesaj yaz' : 'Write another message'}
                   </button>
                 </div>
               ) : (
@@ -298,17 +370,6 @@ export const ConsultantWidget: React.FC = () => {
                       <div className="flex items-start gap-1.5">
                         <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
                         <span>{errorMessage}</span>
-                      </div>
-                      <div className="pt-1 border-t border-rose-200/60">
-                        <a
-                          href={wa.primaryUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 font-semibold text-emerald-700 hover:underline"
-                        >
-                          <MessageCircle className="h-3.5 w-3.5" />
-                          <span>WhatsApp ile yazın</span>
-                        </a>
                       </div>
                     </div>
                   )}
@@ -327,8 +388,8 @@ export const ConsultantWidget: React.FC = () => {
 
                   {/* Ad Soyad */}
                   <div>
-                    <label htmlFor="w-name" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
-                      Ad Soyad <span className="text-rose-500">*</span>
+                    <label htmlFor="w-name" className="block text-[11px] font-bold text-slate-700 mb-0.5">
+                      {isTr ? 'Ad Soyad' : 'Full Name'} <span className="text-rose-500">*</span>
                     </label>
                     <input
                       ref={firstInputRef}
@@ -338,14 +399,14 @@ export const ConsultantWidget: React.FC = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Ahmet Yılmaz"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-[#00357B] focus:outline-none"
                     />
                   </div>
 
                   {/* Telefon */}
                   <div>
-                    <label htmlFor="w-phone" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
-                      Telefon <span className="text-rose-500">*</span>
+                    <label htmlFor="w-phone" className="block text-[11px] font-bold text-slate-700 mb-0.5">
+                      {isTr ? 'Cep Telefonu' : 'Mobile Phone'} <span className="text-rose-500">*</span>
                     </label>
                     <input
                       id="w-phone"
@@ -354,15 +415,15 @@ export const ConsultantWidget: React.FC = () => {
                       value={phone}
                       onChange={handlePhoneChange}
                       placeholder="05xx xxx xx xx"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-[#00357B] focus:outline-none"
                     />
                   </div>
 
-                  {/* Mesaj (10-1000 krkt sayaçlı) */}
+                  {/* Mesaj */}
                   <div>
                     <div className="flex items-center justify-between mb-0.5">
-                      <label htmlFor="w-msg" className="block text-[11px] font-semibold text-slate-700">
-                        Mesajınız <span className="text-rose-500">*</span>
+                      <label htmlFor="w-msg" className="block text-[11px] font-bold text-slate-700">
+                        {isTr ? 'Mesajınız' : 'Message'} <span className="text-rose-500">*</span>
                       </label>
                       <span className="text-[10px] text-slate-400 font-mono">
                         {message.length}/1000
@@ -375,8 +436,12 @@ export const ConsultantWidget: React.FC = () => {
                       required
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Hangi sigorta konusunda bilgi almak istiyorsunuz?"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-sky-600 focus:outline-none resize-none"
+                      placeholder={
+                        isTr
+                          ? 'Kasko, Sağlık, BES veya diğer sigorta talepleriniz...'
+                          : 'Car, Health, Pension or other requests...'
+                      }
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-[#00357B] focus:outline-none resize-none"
                     />
                   </div>
 
@@ -388,32 +453,33 @@ export const ConsultantWidget: React.FC = () => {
                       required
                       checked={kvkkAccepted}
                       onChange={(e) => setKvkkAccepted(e.target.checked)}
-                      className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                      className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-[#00357B] focus:ring-[#00357B]"
                     />
                     <label htmlFor="w-kvkk" className="text-[11px] text-slate-600 leading-tight">
-                      <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-sky-700 underline font-medium">
-                        KVKK Aydınlatma Metni
+                      <a href="/cerez-politikasi" target="_blank" rel="noopener noreferrer" className="text-[#00357B] underline font-bold">
+                        {isTr ? 'KVKK Aydınlatma Metni' : 'Privacy Policy'}
                       </a>
-                      'ni onaylıyorum. <span className="text-rose-500">*</span>
+                      {isTr ? '\'ni onaylıyorum.' : ' I accept.'}{' '}
+                      <span className="text-rose-500">*</span>
                     </label>
                   </div>
 
                   {/* Gönder Butonu */}
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-sky-600 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] disabled:opacity-60 transition-all"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#00357B] py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#00224f] active:scale-[0.98] disabled:opacity-60 transition-all cursor-pointer"
                     >
                       {loading ? (
                         <>
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          <span>Gönderiliyor...</span>
+                          <span>{isTr ? 'Gönderiliyor...' : 'Sending...'}</span>
                         </>
                       ) : (
                         <>
                           <Send className="h-3.5 w-3.5" />
-                          <span>Mesajı İlet</span>
+                          <span>{isTr ? 'Talebimi Danışmana İlet' : 'Send to Agent'}</span>
                         </>
                       )}
                     </button>

@@ -163,6 +163,14 @@ export const Footer: React.FC = () => {
               Çerez Politikası
             </Link>
             <span className="text-slate-300">|</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open_cookie_preferences'))}
+              className="hover:text-[#00357B] font-semibold transition-colors cursor-pointer"
+            >
+              Çerez Ayarları
+            </button>
+            <span className="text-slate-300">|</span>
             <Link to="/kullanim-sartlari" className="hover:text-slate-800 transition-colors">
               Kullanım Şartları
             </Link>
