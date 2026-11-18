@@ -238,11 +238,12 @@ export const ConsultantWidget: React.FC = () => {
             </div>
           ) : (
             <div className="relative">
-              {/* Canlı Robot İmajı */}
+              {/* Canlı Robot İmajı (Tam Renkli, Canlı ve Net) */}
               <img
                 src="/assistant/robot-wave-256.png"
                 alt="13 Sigorta Akıllı Asistan Robotu"
-                className="h-16 w-16 sm:h-20 sm:w-20 object-contain pointer-events-none transition-transform duration-300"
+                className="h-16 w-16 sm:h-20 sm:w-20 object-contain pointer-events-none transition-transform duration-300 opacity-100"
+                style={{ opacity: 1, mixBlendMode: 'normal' }}
                 onError={(e) => {
                   e.currentTarget.src = '/assistant/robot-wave-512.png';
                 }}

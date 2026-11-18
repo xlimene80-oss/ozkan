@@ -34,7 +34,7 @@ export const Logo: React.FC<LogoProps> = ({
             const target = e.currentTarget;
             if (isWhite) {
               target.src = '/logo.png';
-              target.className = `${imgClassName} object-contain mix-blend-screen`;
+              target.className = `${imgClassName} object-contain`;
             } else {
               target.src = '/logo2.png';
             }

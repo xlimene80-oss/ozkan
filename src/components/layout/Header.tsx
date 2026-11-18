@@ -160,7 +160,12 @@ export const Header: React.FC = () => {
       {/* ========================================================= */}
       <div className="w-full bg-[#00357B] text-white border-b border-blue-900/40 relative z-30">
         <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8 gap-2 sm:gap-4">
-          {/* 1. DESKTOP SOL KÖŞE: WhatsApp & Telefon İkonu + 0543 696 13 13 */}
+          {/* 1. DESKTOP EN SOL: Sadece Amblem + 13 Logosu (Beyaz Versiyon, Metinsiz) */}
+          <div className="hidden lg:flex items-center shrink-0">
+            <Logo variant="white" showText={false} imgClassName="h-9 sm:h-10 w-auto" />
+          </div>
+
+          {/* 2. DESKTOP HEMEN YANI: WhatsApp & Telefon İkonu + 0543 696 13 13 */}
           <div className="hidden lg:flex items-center gap-1.5 shrink-0">
             <div className="flex items-center rounded-full bg-white/10 hover:bg-white/15 border border-white/20 p-1 pl-2 pr-3 transition-colors">
               {/* WhatsApp İkonu */}
@@ -187,19 +192,12 @@ export const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* MOBİL SOL & ORTA ALAN: Sol 13 Logosu, Orta WhatsApp & Telefon */}
+          {/* MOBİL (TELEFON) SOL & ORTA: Sol Sadece Amblem + 13 Logosu, Orta WhatsApp & Telefon */}
           <div className="flex lg:hidden items-center justify-between flex-1 min-w-0 pr-2">
-            {/* 1. Sol: 13 Logosu */}
-            <Link to="/" className="flex items-center shrink-0 pr-1.5" aria-label="13 Sigorta Ana Sayfa">
-              <img
-                src="/logo-white.png"
-                alt="13 Sigorta"
-                className="h-8 w-auto object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = '/logo.png';
-                }}
-              />
-            </Link>
+            {/* 1. Sol: Sadece Amblem + 13 Logosu (Beyaz Versiyon, Metinsiz) */}
+            <div className="flex items-center shrink-0 pr-1.5">
+              <Logo variant="white" showText={false} imgClassName="h-8 w-auto" />
+            </div>
 
             {/* 2. Orta: Yeşil WhatsApp + Telefon ikonu ve 0543 696 13 13 */}
             <div className="flex items-center rounded-full bg-white/10 border border-white/20 p-0.5 pl-1.5 pr-2.5 shrink-0">
@@ -726,9 +724,9 @@ export const Header: React.FC = () => {
           {/* Çekmece Kutusu */}
           <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white p-5 shadow-2xl flex flex-col justify-between overflow-y-auto z-50">
             <div>
-              {/* Çekmece Başlığı: Lacivert Logo & Kapat Butonu */}
+              {/* Çekmece Başlığı: Lacivert Logo (Metinsiz) & Kapat Butonu */}
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <Logo variant="blue" imgClassName="h-9 w-auto" />
+                <Logo variant="blue" showText={false} imgClassName="h-9 w-auto" />
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
