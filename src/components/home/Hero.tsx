@@ -44,7 +44,7 @@ export const Hero: React.FC = () => {
 
   return (
     <section
-      className="relative w-full min-h-[500px] sm:min-h-[540px] lg:min-h-[580px] flex items-center bg-[#061a40] overflow-hidden"
+      className="relative w-full min-h-[520px] sm:min-h-[560px] lg:min-h-[600px] flex items-center bg-[#061a40] overflow-hidden"
       aria-label="13 Sigorta Ailesi Karşılama Alanı"
     >
       {/* 1. Arka Plan Görseli (hero-bg.png) */}
@@ -79,10 +79,10 @@ export const Hero: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* 3. Sol Alan (Güçlü Tipografi, Glassmorphism Kartlar ve CTA) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 lg:pt-16 pb-16 sm:pb-20 lg:pb-24">
+      {/* 3. İçerik Alanı: Belirlenen Dikey Sıralama */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 lg:pt-16 pb-20 sm:pb-24 lg:pb-28">
         <div className="max-w-2xl lg:max-w-3xl text-left">
-          {/* Ana Başlık: Güçlü ve Modern Tipografi ile Alt Alta 2 Satır */}
+          {/* 1. En Üstte: Ana Başlık & Açıklama Metni */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.12] tracking-tight drop-shadow-sm mb-3.5 sm:mb-4">
             <span className="block text-white">13 Sigorta</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-50 to-blue-200">
@@ -90,13 +90,25 @@ export const Hero: React.FC = () => {
             </span>
           </h1>
 
-          {/* Alt Açıklama Metni */}
-          <p className="text-sm sm:text-base md:text-lg text-blue-100/90 font-normal leading-relaxed max-w-2xl mb-7 sm:mb-8">
+          <p className="text-sm sm:text-base md:text-lg text-blue-100/90 font-normal leading-relaxed max-w-2xl mb-6 sm:mb-7">
             Aracınızdan sağlığınıza, yuvanızdan geleceğinize kadar her an yanınızdayız.
           </p>
 
-          {/* Hızlı Kategori Kartları (Cam Efekti / Glassmorphism) - Mobilde 2x2 Izgara */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 mb-7 sm:mb-9">
+          {/* 2. Açıklamanın Hemen Altında: Turuncu Renkli "Hemen Ücretsiz Teklif Al" Ana Butonu */}
+          <div className="mb-6 sm:mb-8">
+            <a
+              href="#teklif"
+              onClick={scrollToOffer}
+              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-sm sm:text-base px-7 sm:px-9 py-3.5 sm:py-4 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
+            >
+              <Sparkles className="h-5 w-5 text-slate-950" />
+              <span>Hemen Ücretsiz Teklif Al</span>
+              <ArrowRight className="h-4 w-4 text-slate-950" />
+            </a>
+          </div>
+
+          {/* 3. Butonun Altında: 4 Adet Hızlı Kategori Kartı (Cam Efekti / Glassmorphism - Mobilde 2x2 Izgara) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 mb-6 sm:mb-8">
             {quickCategories.map((cat, idx) => (
               <Link
                 key={idx}
@@ -121,22 +133,11 @@ export const Hero: React.FC = () => {
             ))}
           </div>
 
-          {/* Ana Eylem Çağrısı (CTA) Butonları */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            {/* Dikkat Çekici Canlı Turuncu / Altın Sarısı Ana Teklif Butonu */}
-            <a
-              href="#teklif"
-              onClick={scrollToOffer}
-              className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-sm sm:text-base px-6 sm:px-8 py-3.5 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-slate-950" />
-              <span>Hemen Ücretsiz Teklif Al</span>
-            </a>
-
-            {/* Şeffaf Çerçeveli Bize Ulaşın Butonu */}
+          {/* 4. En Altta: (4 Kategori Kartının Altında) "Bize Ulaşın" Butonu */}
+          <div className="pt-1">
             <Link
               to="/iletisim"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base px-5 sm:px-7 py-3.5 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/40 hover:border-white bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-3.5 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Phone className="h-4 w-4 text-emerald-400" />
               <span>Bize Ulaşın</span>
