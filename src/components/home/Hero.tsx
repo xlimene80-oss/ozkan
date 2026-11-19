@@ -23,22 +23,34 @@ export const Hero: React.FC = () => {
     {
       title: 'Sağlık',
       link: '/teklif/tamamlayici-saglik',
-      icon: <HeartPulse className="h-5 w-5 stroke-[1.8]" />,
+      icon: <HeartPulse className="h-5 w-5 text-white stroke-[2]" />,
+      gradient: 'from-[#FF4B6E] to-[#FF758C]',
+      hoverBorder: 'hover:border-[#FF4B6E]',
+      hoverShadow: 'hover:shadow-[0_8px_25px_rgba(255,75,110,0.35)]',
     },
     {
       title: 'Kasko & Trafik',
       link: '/teklif/kasko',
-      icon: <Car className="h-5 w-5 stroke-[1.8]" />,
+      icon: <Car className="h-5 w-5 text-white stroke-[2]" />,
+      gradient: 'from-[#0072FF] to-[#00C6FF]',
+      hoverBorder: 'hover:border-[#00C6FF]',
+      hoverShadow: 'hover:shadow-[0_8px_25px_rgba(0,198,255,0.35)]',
     },
     {
       title: 'Konut & DASK',
       link: '/teklif/dask',
-      icon: <Home className="h-5 w-5 stroke-[1.8]" />,
+      icon: <Home className="h-5 w-5 text-white stroke-[2]" />,
+      gradient: 'from-[#059669] to-[#34D399]',
+      hoverBorder: 'hover:border-[#34D399]',
+      hoverShadow: 'hover:shadow-[0_8px_25px_rgba(52,211,153,0.35)]',
     },
     {
       title: 'BES & Hayat',
       link: '/teklif/bireysel-emeklilik',
-      icon: <PiggyBank className="h-5 w-5 stroke-[1.8]" />,
+      icon: <PiggyBank className="h-5 w-5 text-white stroke-[2]" />,
+      gradient: 'from-[#F59E0B] to-[#FBBF24]',
+      hoverBorder: 'hover:border-[#FBBF24]',
+      hoverShadow: 'hover:shadow-[0_8px_25px_rgba(251,191,36,0.35)]',
     },
   ];
 
@@ -113,21 +125,23 @@ export const Hero: React.FC = () => {
               <Link
                 key={idx}
                 to={cat.link}
-                className="group relative flex flex-col items-center sm:items-start text-center sm:text-left p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                className={`group relative flex flex-col items-center sm:items-start text-center sm:text-left p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/[0.18] border border-white/20 ${cat.hoverBorder} shadow-lg hover:-translate-y-1.5 ${cat.hoverShadow} transition-all duration-300`}
                 style={{
                   backdropFilter: 'blur(12px)',
                   WebkitBackdropFilter: 'blur(12px)',
                 }}
               >
-                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-white/15 group-hover:bg-white text-white group-hover:text-[#00357B] transition-colors mb-2 shadow-xs">
+                <div
+                  className={`flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-gradient-to-br ${cat.gradient} text-white shadow-md shadow-black/20 group-hover:scale-105 group-hover:brightness-110 transition-all duration-300 mb-2`}
+                >
                   {cat.icon}
                 </div>
-                <span className="text-xs sm:text-sm font-extrabold text-white group-hover:text-amber-300 transition-colors leading-tight">
+                <span className="text-xs sm:text-sm font-extrabold text-white group-hover:text-white transition-colors leading-tight">
                   {cat.title}
                 </span>
-                <span className="text-[10px] text-blue-200/80 mt-1 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                <span className="text-[10px] text-[#FBBF24] font-bold mt-1 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
                   <span>Teklif Al</span>
-                  <ArrowRight className="h-3 w-3" />
+                  <ArrowRight className="h-3 w-3 stroke-[2.2]" />
                 </span>
               </Link>
             ))}
